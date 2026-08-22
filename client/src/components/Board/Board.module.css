@@ -1,0 +1,21 @@
+.board {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stats {
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.columns {
+  display: flex;
+  gap: 24px;
+}
+
+.center {
+  text-align: center;
+  padding: 48px;
+  color: #6b7280;
+}

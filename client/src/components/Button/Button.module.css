@@ -1,0 +1,37 @@
+.btn {
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.danger {
+  background: #dc2626;
+  color: white;
+}
+
+.sm {
+  padding: 4px 12px;
+  font-size: 12px;
+}
+
+.md {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.lg {
+  padding: 12px 24px;
+  font-size: 16px;
+}
