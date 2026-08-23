@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
-import Button from '../../components/Button/Button.jsx';
 import styles from './RegisterPage.module.css';
 
 export default function RegisterPage() {
@@ -24,16 +23,60 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <h2>Register</h2>
-        {error && <p className={styles.error}>{error}</p>}
-        <input type="text" placeholder="Name" value={name} onChange={e => setName(e.target.value)} required />
-        <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
-        <Button variant="primary" type="submit">Register</Button>
-        <p>Already have an account? <a href="/login">Login</a></p>
-      </form>
+    <div className={styles.page}>
+      <div className={styles.card}>
+        <div className={styles.brand}>
+          <div className={styles.logo}>S</div>
+          <h1>SyncBoard</h1>
+          <p>Join your team today</p>
+        </div>
+
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <div className={styles.inputGroup}>
+            <label>Name</label>
+            <input
+              type="text"
+              placeholder="John Doe"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="Min. 6 characters"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              minLength={6}
+            />
+          </div>
+
+          {error && <p className={styles.error}>{error}</p>}
+
+          <button type="submit" className={styles.submit}>
+            Create Account
+          </button>
+
+          <p className={styles.switch}>
+            Already have an account? <span onClick={() => navigate('/login')}>Sign in</span>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }

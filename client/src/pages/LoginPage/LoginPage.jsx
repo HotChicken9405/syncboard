@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
-import Button from '../../components/Button/Button.jsx';
 import styles from './LoginPage.module.css';
 
 export default function LoginPage() {
@@ -23,15 +22,48 @@ export default function LoginPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <h2>Login</h2>
-        {error && <p className={styles.error}>{error}</p>}
-        <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
-        <Button variant="primary" type="submit">Login</Button>
-        <p>Don't have an account? <a href="/register">Register</a></p>
-      </form>
+    <div className={styles.page}>
+      <div className={styles.card}>
+        <div className={styles.brand}>
+          <div className={styles.logo}>S</div>
+          <h1>SyncBoard</h1>
+          <p>Collaborate. Organize. Deliver.</p>
+        </div>
+
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <div className={styles.inputGroup}>
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          {error && <p className={styles.error}>{error}</p>}
+
+          <button type="submit" className={styles.submit}>
+            Sign In
+          </button>
+
+          <p className={styles.switch}>
+            New here? <span onClick={() => navigate('/register')}>Create an account</span>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }

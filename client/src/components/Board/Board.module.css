@@ -1,7 +1,11 @@
+/* Board.module.css */
 .board {
+  width: 100%;
+  box-sizing: border-box;
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
+  background: #f9fafb;
 }
 
 .stats {
@@ -34,6 +38,7 @@
   color: white;
   cursor: pointer;
   font-size: 14px;
+  transition: background 0.2s;
 }
 
 .logout:hover {
@@ -41,10 +46,11 @@
 }
 
 .offline {
-  background: #fbbf24;
+  background: #fef3c7;
   color: #92400e;
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
   margin-right: 12px;
+  border: 1px solid #fde68a;
 }
