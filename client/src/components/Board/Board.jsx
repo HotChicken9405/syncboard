@@ -10,21 +10,36 @@ const COLUMNS = [
   { id: 'done', title: 'Done' },
 ];
 
+const STATUS_ORDER = ['todo', 'doing', 'done'];
+
 export default function Board() {
   const { logout } = useAuth();
-  const { state, addTask, moveTask, removeTask } = useTasks();
+  const { state, addTask, moveTask, removeTask, online } = useTasks();
 
   if (state.loading) return <div className={styles.center}>Loading...</div>;
   if (state.error) return <div className={styles.center}>Error: {state.error}</div>;
 
   const doneCount = state.tasks.filter(t => t.status === 'done').length;
 
+  const handleMove = (id, direction) => {
+    const task = state.tasks.find(t => (t._id || t.id) === id);
+    if (!task) return;
+    
+    const currentIndex = STATUS_ORDER.indexOf(task.status);
+    const newIndex = currentIndex + direction;
+    const newStatus = STATUS_ORDER[newIndex];
+    
+    if (!newStatus) return;
+    
+    moveTask(id, newStatus, task.version || 1);
+  };
+
   return (
     <div className={styles.board}>
       <div className={styles.header}>
         <h1>SyncBoard</h1>
         <div>
-          {!navigator.onLine && <span className={styles.offline}>Offline</span>}
+          {!online && <span className={styles.offline}>Offline</span>}
           <button onClick={logout} className={styles.logout}>Logout</button>
         </div>
       </div>
@@ -36,14 +51,8 @@ export default function Board() {
             key={col.id}
             title={col.title}
             tasks={state.tasks.filter(t => t.status === col.id)}
-            onMoveLeft={(id) => {
-              const task = state.tasks.find(t => (t._id || t.id) === id);
-              moveTask(id, 'todo', task?.version);
-            }}
-            onMoveRight={(id) => {
-              const task = state.tasks.find(t => (t._id || t.id) === id);
-              moveTask(id, 'done', task?.version);
-            }}
+            onMoveLeft={(id) => handleMove(id, -1)}
+            onMoveRight={(id) => handleMove(id, 1)}
             onDelete={removeTask}
           />
         ))}

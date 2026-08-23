@@ -16,7 +16,9 @@ export function tasksReducer(state, action) {
       return {
         ...state,
         tasks: state.tasks.map(t =>
-          (t._id || t.id) === action.id ? { ...t, status: action.status } : t
+          (t._id || t.id) === action.id 
+            ? { ...t, status: action.status, version: action.version || t.version } 
+            : t
         ),
       };
     case 'deleted':

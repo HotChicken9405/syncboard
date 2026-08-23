@@ -1,13 +1,27 @@
-import { useReducer, useEffect, useCallback } from 'react';
+import { useReducer, useEffect, useCallback, useState } from 'react';
 import { tasksReducer, initialState } from '../reducers/tasksReducer.js';
 import * as api from '../api/tasks.js';
-import { getCachedTasks, cacheTasks, getOfflineQueue, addToQueue, clearQueue, isOnline } from '../utils/storage.js';
+import { getCachedTasks, cacheTasks, getOfflineQueue, addToQueue, clearQueue } from '../utils/storage.js';
 
 export function useTasks() {
   const [state, dispatch] = useReducer(tasksReducer, { ...initialState, tasks: getCachedTasks() });
+  const [online, setOnline] = useState(navigator.onLine);
 
   useEffect(() => {
-    if (!isOnline()) {
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!online) {
       dispatch({ type: 'loaded', tasks: getCachedTasks() });
       return;
     }
@@ -18,7 +32,7 @@ export function useTasks() {
         cacheTasks(res.data);
       })
       .catch(err => dispatch({ type: 'error', error: err.message }));
-  }, []);
+  }, [online]);
 
   const syncOfflineQueue = useCallback(async () => {
     const queue = getOfflineQueue();
@@ -35,26 +49,25 @@ export function useTasks() {
         }
       } catch (err) {
         if (err.message.includes('Conflict')) {
-          alert(`Conflict on task "${action.task?.title || action.id}". Your changes were overwritten by another user.`);
+          alert(`Conflict detected. Your changes for "${action.task?.title || action.id}" were overwritten.`);
         }
       }
     }
     clearQueue();
     
-    // Refresh tasks
     const res = await api.getTasks();
     dispatch({ type: 'loaded', tasks: res.data });
     cacheTasks(res.data);
   }, []);
 
   useEffect(() => {
-    const handleOnline = () => syncOfflineQueue();
-    window.addEventListener('online', handleOnline);
-    return () => window.removeEventListener('online', handleOnline);
-  }, [syncOfflineQueue]);
+    if (online) {
+      syncOfflineQueue();
+    }
+  }, [online, syncOfflineQueue]);
 
   const addTask = useCallback((task) => {
-    if (!isOnline()) {
+    if (!online) {
       const tempTask = { ...task, _id: 'temp-' + Date.now(), version: 1 };
       addToQueue({ type: 'added', task });
       dispatch({ type: 'added', task: tempTask });
@@ -68,10 +81,10 @@ export function useTasks() {
         cacheTasks([...state.tasks, res.data]);
       })
       .catch(err => alert(err.message));
-  }, [state.tasks]);
+  }, [online, state.tasks]);
 
   const moveTask = useCallback((id, status, currentVersion) => {
-    if (!isOnline()) {
+    if (!online) {
       addToQueue({ type: 'moved', id, status, version: currentVersion });
       dispatch({ type: 'moved', id, status });
       cacheTasks(state.tasks.map(t => (t._id || t.id) === id ? { ...t, status } : t));
@@ -80,22 +93,22 @@ export function useTasks() {
 
     api.updateTask(id, { status, version: currentVersion })
       .then(res => {
-        dispatch({ type: 'moved', id, status: res.data.status });
+        dispatch({ type: 'moved', id, status: res.data.status, version: res.data.version });
         cacheTasks(state.tasks.map(t => (t._id || t.id) === id ? res.data : t));
       })
       .catch(err => {
         if (err.message.includes('Conflict')) {
-          alert('This task was modified by another user. Refresh to see latest version.');
+          alert('This task was modified by another user. Refresh to see the latest version.');
         } else {
           alert(err.message);
         }
       });
-  }, [state.tasks]);
+  }, [online, state.tasks]);
 
   const removeTask = useCallback((id) => {
     if (!window.confirm('Delete this task?')) return;
     
-    if (!isOnline()) {
+    if (!online) {
       addToQueue({ type: 'deleted', id });
       dispatch({ type: 'deleted', id });
       cacheTasks(state.tasks.filter(t => (t._id || t.id) !== id));
@@ -108,7 +121,7 @@ export function useTasks() {
         cacheTasks(state.tasks.filter(t => (t._id || t.id) !== id));
       })
       .catch(err => alert(err.message));
-  }, [state.tasks]);
+  }, [online, state.tasks]);
 
-  return { state, addTask, moveTask, removeTask, syncOfflineQueue };
+  return { state, addTask, moveTask, removeTask, online };
 }
