@@ -4,20 +4,24 @@ import * as api from '../api/tasks.js';
 import { getCachedTasks, cacheTasks, getOfflineQueue, addToQueue, clearQueue } from '../utils/storage.js';
 
 export function useTasks() {
-  const [state, dispatch] = useReducer(tasksReducer, { ...initialState, tasks: getCachedTasks() });
-  const [online, setOnline] = useState(navigator.onLine);
+    const [state, dispatch] = useReducer(tasksReducer, { ...initialState, tasks: getCachedTasks() });
+  const [online, setOnline] = useState(true);
 
+  // Check actual server connectivity every 5 seconds
   useEffect(() => {
-    const handleOnline = () => setOnline(true);
-    const handleOffline = () => setOnline(false);
-    
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+    const checkOnline = async () => {
+      try {
+        await fetch('http://localhost:4000/api/health', { method: 'HEAD', mode: 'no-cors' });
+        setOnline(true);
+      } catch {
+        setOnline(false);
+      }
     };
+
+    checkOnline();
+    const interval = setInterval(checkOnline, 5000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
