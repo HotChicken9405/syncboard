@@ -1,0 +1,26 @@
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.center {
+  text-align: center;
+  padding: 48px;
+}
+
+.details {
+  margin-top: 24px;
+  line-height: 2;
+}
+
+.details p {
+  margin: 8px 0;
+}
+
+.low { color: #065f46; }
+.normal { color: #1e40af; }
+.high { color: #991b1b; }

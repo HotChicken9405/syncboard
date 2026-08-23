@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Column from '../Column/Column.jsx';
-import { getTasks, updateTask, deleteTask } from '../../api/tasks.js';
+import AddTaskForm from '../AddTaskForm/AddTaskForm.jsx';
+import { getTasks, createTask, updateTask, deleteTask } from '../../api/tasks.js';
 import styles from './Board.module.css';
 
 const COLUMNS = [
@@ -25,6 +26,12 @@ export default function Board() {
         setLoading(false);
       });
   }, []);
+
+  const handleAdd = (task) => {
+    createTask(task).then(newTask => {
+      setTasks(prev => [...prev, newTask]);
+    });
+  };
 
   const handleMove = (id, direction) => {
     const statusOrder = ['todo', 'doing', 'done'];
@@ -55,6 +62,7 @@ export default function Board() {
     <div className={styles.board}>
       <h1>SyncBoard</h1>
       <p className={styles.stats}>{doneCount} of {tasks.length} done</p>
+      <AddTaskForm onAdd={handleAdd} />
       <div className={styles.columns}>
         {COLUMNS.map(col => (
           <Column
