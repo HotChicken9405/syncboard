@@ -16,13 +16,13 @@ export function tasksReducer(state, action) {
       return {
         ...state,
         tasks: state.tasks.map(t =>
-          t.id === action.id ? { ...t, status: action.status } : t
+          (t._id || t.id) === action.id ? { ...t, status: action.status } : t
         ),
       };
     case 'deleted':
       return {
         ...state,
-        tasks: state.tasks.filter(t => t.id !== action.id),
+        tasks: state.tasks.filter(t => (t._id || t.id) !== action.id),
       };
     default:
       throw new Error('Unknown action: ' + action.type);

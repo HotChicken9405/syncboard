@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { mockTasks } from '../../data/mockTasks.js';
+import { getTasks } from '../../api/tasks.js';
 import Button from '../../components/Button/Button.jsx';
 import styles from './TaskDetailPage.module.css';
 
@@ -11,9 +11,13 @@ export default function TaskDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const found = mockTasks.find(t => t.id === id);
-    setTask(found || null);
-    setLoading(false);
+    getTasks()
+      .then(res => {
+        const found = res.data.find(t => (t._id || t.id) === id);
+        setTask(found || null);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [id]);
 
   if (loading) return <div className={styles.center}>Loading...</div>;

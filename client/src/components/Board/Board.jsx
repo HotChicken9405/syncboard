@@ -1,4 +1,5 @@
 import { useReducer, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext.jsx';
 import Column from '../Column/Column.jsx';
 import AddTaskForm from '../AddTaskForm/AddTaskForm.jsx';
 import { tasksReducer, initialState } from '../../reducers/tasksReducer.js';
@@ -13,22 +14,23 @@ const COLUMNS = [
 
 export default function Board() {
   const [state, dispatch] = useReducer(tasksReducer, initialState);
+  const { logout } = useAuth();
 
   useEffect(() => {
     getTasks()
-      .then(tasks => dispatch({ type: 'loaded', tasks }))
+      .then(res => dispatch({ type: 'loaded', tasks: res.data }))
       .catch(err => dispatch({ type: 'error', error: err.message }));
   }, []);
 
   const handleAdd = (task) => {
-    createTask(task).then(newTask => {
-      dispatch({ type: 'added', task: newTask });
+    createTask(task).then(res => {
+      dispatch({ type: 'added', task: res.data });
     });
   };
 
-  const handleMove = (id, direction) => {
+    const handleMove = (id, direction) => {
     const statusOrder = ['todo', 'doing', 'done'];
-    const task = state.tasks.find(t => t.id === id);
+    const task = state.tasks.find(t => (t._id || t.id) === id);
     const currentIndex = statusOrder.indexOf(task.status);
     const newStatus = statusOrder[currentIndex + direction];
 
@@ -53,7 +55,10 @@ export default function Board() {
 
   return (
     <div className={styles.board}>
-      <h1>SyncBoard</h1>
+      <div className={styles.header}>
+        <h1>SyncBoard</h1>
+        <button onClick={logout} className={styles.logout}>Logout</button>
+      </div>
       <p className={styles.stats}>{doneCount} of {state.tasks.length} done</p>
       <AddTaskForm onAdd={handleAdd} />
       <div className={styles.columns}>

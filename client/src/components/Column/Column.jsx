@@ -11,7 +11,7 @@ export default function Column({ title, tasks, onMoveLeft, onMoveRight, onDelete
       <div className={styles.tasks}>
         {tasks.map(task => (
           <TaskCard
-            key={task.id}
+            key={task._id || task.id}
             task={task}
             onMoveLeft={onMoveLeft}
             onMoveRight={onMoveRight}
