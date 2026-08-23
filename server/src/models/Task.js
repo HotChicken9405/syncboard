@@ -7,6 +7,7 @@ const taskSchema = new mongoose.Schema({
   dueDate: { type: Date },
   priority: { type: String, enum: ['low', 'normal', 'high'], default: 'normal' },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  version: { type: Number, default: 1 },
 }, { timestamps: true });
 
-export const Task = mongoose.model('Task', taskSchema); 
+export const Task = mongoose.model('Task', taskSchema);

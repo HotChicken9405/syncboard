@@ -39,3 +39,12 @@
 .logout:hover {
   background: #4b5563;
 }
+
+.offline {
+  background: #fbbf24;
+  color: #92400e;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-right: 12px;
+}

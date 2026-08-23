@@ -14,6 +14,7 @@ export const updateTaskSchema = z.object({
   status: z.enum(['todo', 'doing', 'done']).optional(),
   dueDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
   priority: z.enum(['low', 'normal', 'high']).optional(),
+  version: z.number().optional(),
 }).refine(data => Object.keys(data).length > 0, {
   message: 'At least one field must be provided',
 });

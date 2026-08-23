@@ -1,12 +1,12 @@
 import { Task } from '../models/Task.js';
-import { NotFoundError, ForbiddenError } from '../utils/AppError.js';
+import { NotFoundError, ForbiddenError, AppError } from '../utils/AppError.js';
 
 export async function list(userId) {
   return Task.find({ createdBy: userId }).sort({ createdAt: -1 });
 }
 
 export async function create(data, userId) {
-  return Task.create({ ...data, createdBy: userId });
+  return Task.create({ ...data, createdBy: userId, version: 1 });
 }
 
 export async function getOne(id, userId) {
@@ -18,7 +18,14 @@ export async function getOne(id, userId) {
 
 export async function update(id, data, userId) {
   const task = await getOne(id, userId);
+  
+  // Conflict detection
+  if (data.version !== undefined && data.version !== task.version) {
+    throw new AppError('Conflict: task was modified by another user', 409, 'CONFLICT');
+  }
+  
   Object.assign(task, data);
+  task.version += 1;
   await task.save();
   return task;
 }
