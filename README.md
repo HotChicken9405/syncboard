@@ -13,22 +13,22 @@
 
 ### 1. Start MongoDB
 
-Open a terminal:
+Open a terminal: <br>
 mongod
 
 ### 2. Start the Backend Server
 
-cd server
-npm install
+cd server <br>
+npm install <br>
 npm run dev
 
 ### 3. Start the Frontend Client
 
-cd client
-npm install
-npm run dev
+cd client <br>
+npm install <br>
+npm run dev <br>
 
-Create server/.env:
-PORT=4000
-JWT_SECRET=your-secret-key-here
-MONGODB_URI=mongodb://localhost:27017/syncboard
+Create server/.env: <br>
+PORT=4000 <br>
+JWT_SECRET=your-secret-key-here <br>
+MONGODB_URI=mongodb://localhost:27017/syncboard <br>
