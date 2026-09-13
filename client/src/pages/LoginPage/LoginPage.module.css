@@ -10,9 +10,11 @@
 }
 
 .card {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);  /* ← Slight transparency */
+  backdrop-filter: blur(8px);  /* ← Frosted glass effect */
   border-radius: 20px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: none;  /* ← Remove */
+  border: 1px solid rgba(255, 255, 255, 0.5);
   width: 100%;
   max-width: 420px;
   padding: 48px 40px;

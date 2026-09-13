@@ -20,23 +20,32 @@ export default function TaskDetailPage() {
       .catch(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <div className={styles.center}>Loading...</div>;
+  if (loading) return (
+    <div className={styles.page}>
+      <div className={styles.center}>Loading...</div>
+    </div>
+  );
+  
   if (!task) return (
-    <div className={styles.center}>
-      <h2>Task not found</h2>
-      <Button variant="primary" onClick={() => navigate('/')}>Back to Board</Button>
+    <div className={styles.page}>
+      <div className={styles.center}>
+        <h2>Task not found</h2>
+        <Button variant="primary" onClick={() => navigate('/')}>Back to Board</Button>
+      </div>
     </div>
   );
 
   return (
-    <div className={styles.container}>
-      <Button variant="primary" size="sm" onClick={() => navigate('/')}>← Back</Button>
-      <h1>{task.title}</h1>
-      <div className={styles.details}>
-        <p><strong>Assignee:</strong> {task.assignee}</p>
-        <p><strong>Status:</strong> {task.status}</p>
-        <p><strong>Due:</strong> {task.dueDate}</p>
-        <p><strong>Priority:</strong> <span className={styles[task.priority]}>{task.priority}</span></p>
+    <div className={styles.page}>
+      <div className={styles.container}>
+        <Button variant="primary" size="sm" onClick={() => navigate('/')}>← Back</Button>
+        <h1>{task.title}</h1>
+        <div className={styles.details}>
+          <p><strong>Assignee:</strong> {task.assignee}</p>
+          <p><strong>Status:</strong> {task.status}</p>
+          <p><strong>Due:</strong> {task.dueDate}</p>
+          <p><strong>Priority:</strong> <span className={styles[task.priority]}>{task.priority}</span></p>
+        </div>
       </div>
     </div>
   );

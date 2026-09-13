@@ -1,11 +1,19 @@
 /* Board.module.css */
 .board {
   width: 100%;
+  min-height: 100vh;
   box-sizing: border-box;
   padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
   background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
 }
 
 .stats {
@@ -16,18 +24,13 @@
 .columns {
   display: flex;
   gap: 24px;
+  flex: 1;
 }
 
 .center {
   text-align: center;
   padding: 48px;
   color: #6b7280;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .logout {

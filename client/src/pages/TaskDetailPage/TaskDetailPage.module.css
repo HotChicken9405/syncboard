@@ -1,6 +1,17 @@
+.page {
+  min-height: 100vh;
+  width: 100%;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
 .container {
   max-width: 600px;
-  margin: 40px auto;
+  width: 100%;
   padding: 24px;
   background: white;
   border-radius: 12px;
