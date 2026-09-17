@@ -3,7 +3,7 @@ import { validate } from '../middleware/validate.js';
 import { createTaskSchema, updateTaskSchema } from '../schemas/taskSchema.js';
 import * as controller from '../controllers/taskController.js';
 
-const router = Router();
+const router = Router({ mergeParams: true }); // ← mergeParams to get boardId
 
 router.get('/', controller.list);
 router.post('/', validate(createTaskSchema), controller.create);
