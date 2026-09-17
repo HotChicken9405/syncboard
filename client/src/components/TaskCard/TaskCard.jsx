@@ -1,30 +1,55 @@
 import { Link } from 'react-router-dom';
-import Button from '../Button/Button.jsx';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import styles from './TaskCard.module.css';
 
-export default function TaskCard({ task, onMoveLeft, onMoveRight, onDelete }) {
-  const statusOrder = ['todo', 'doing', 'done'];
-  const currentIndex = statusOrder.indexOf(task.status);
+export default function TaskCard({ task, boardId, onDelete, isDragging = false }) {
   const id = task._id || task.id;
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging: isSortableDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isSortableDragging ? 0.4 : 1,
+  };
+
+  const priorityClass = {
+    low: styles.low,
+    normal: styles.normal,
+    high: styles.high,
+  }[task.priority] || styles.normal;
+
   return (
-    <article className={styles.card}>
-      <Link to={`/tasks/${id}`} className={styles.link}>
-        <h3 className={styles.title}>{task.title}</h3>
-        <p className={styles.meta}>{task.assignee} · Due {task.dueDate}</p>
-        <span className={`${styles.badge} ${styles[task.priority]}`}>{task.priority}</span>
-      </Link>
-      <div className={styles.actions}>
-        <Button variant="primary" size="sm" disabled={currentIndex === 0} onClick={() => onMoveLeft(id)}>
-          ←
-        </Button>
-        <Button variant="danger" size="sm" onClick={() => onDelete(id)}>
-          Delete
-        </Button>
-        <Button variant="primary" size="sm" disabled={currentIndex === 2} onClick={() => onMoveRight(id)}>
-          →
-        </Button>
+    <article
+      ref={setNodeRef}
+      style={style}
+      className={`${styles.card} ${isDragging ? styles.dragging : ''}`}
+    >
+      <div
+        className={styles.dragHandle}
+        {...attributes}
+        {...listeners}
+      >
+        ⠿
       </div>
+      <Link to={`/boards/${boardId}/tasks/${id}`} className={styles.link}>
+        <h3 className={styles.title}>{task.title}</h3>
+        <p className={styles.meta}>
+          {task.assignee} · Due {task.dueDate
+            ? new Date(task.dueDate).toLocaleDateString()
+            : '—'}
+        </p>
+        <span className={`${styles.badge} ${priorityClass}`}>{task.priority}</span>
+      </Link>
+      <button className={styles.deleteBtn} onClick={() => onDelete(id)}>×</button>
     </article>
   );
 }

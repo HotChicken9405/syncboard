@@ -5,32 +5,30 @@ import Button from '../../components/Button/Button.jsx';
 import styles from './TaskDetailPage.module.css';
 
 export default function TaskDetailPage() {
-  const { id } = useParams();
+  const { id, boardId } = useParams();
   const navigate = useNavigate();
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getTasks()
+    getTasks(boardId)
       .then(res => {
         const found = res.data.find(t => (t._id || t.id) === id);
         setTask(found || null);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [id]);
+  }, [id, boardId]);
 
   if (loading) return (
-    <div className={styles.page}>
-      <div className={styles.center}>Loading...</div>
-    </div>
+    <div className={styles.page}><div className={styles.center}>Loading...</div></div>
   );
-  
+
   if (!task) return (
     <div className={styles.page}>
       <div className={styles.center}>
         <h2>Task not found</h2>
-        <Button variant="primary" onClick={() => navigate('/')}>Back to Board</Button>
+        <Button variant="primary" onClick={() => navigate(`/boards/${boardId}`)}>Back to Board</Button>
       </div>
     </div>
   );
@@ -38,12 +36,12 @@ export default function TaskDetailPage() {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        <Button variant="primary" size="sm" onClick={() => navigate('/')}>← Back</Button>
+        <Button variant="primary" size="sm" onClick={() => navigate(`/boards/${boardId}`)}>← Back</Button>
         <h1>{task.title}</h1>
         <div className={styles.details}>
           <p><strong>Assignee:</strong> {task.assignee}</p>
           <p><strong>Status:</strong> {task.status}</p>
-          <p><strong>Due:</strong> {task.dueDate}</p>
+          <p><strong>Due:</strong> {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '—'}</p>
           <p><strong>Priority:</strong> <span className={styles[task.priority]}>{task.priority}</span></p>
         </div>
       </div>

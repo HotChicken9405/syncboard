@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
-import Board from './components/Board/Board.jsx';
+import BoardsListPage from './pages/BoardsListPage/BoardsListPage.jsx';
+import BoardPage from './pages/BoardPage/BoardPage.jsx';
 import TaskDetailPage from './pages/TaskDetailPage/TaskDetailPage.jsx';
 import LoginPage from './pages/LoginPage/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage/RegisterPage.jsx';
@@ -20,8 +21,9 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/" element={<PrivateRoute><Board /></PrivateRoute>} />
-          <Route path="/tasks/:id" element={<PrivateRoute><TaskDetailPage /></PrivateRoute>} />
+          <Route path="/" element={<PrivateRoute><BoardsListPage /></PrivateRoute>} />
+          <Route path="/boards/:boardId" element={<PrivateRoute><BoardPage /></PrivateRoute>} />
+          <Route path="/boards/:boardId/tasks/:id" element={<PrivateRoute><TaskDetailPage /></PrivateRoute>} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
