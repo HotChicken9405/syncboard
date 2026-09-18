@@ -1,16 +1,18 @@
 import { Task } from '../models/Task.js';
 import { NotFoundError, ForbiddenError, AppError } from '../utils/AppError.js';
+import { logActivity } from './commentService.js';
 
 export async function list(userId, boardId) {
   return Task.find({ createdBy: userId, boardId }).sort({ position: 1, createdAt: -1 });
 }
 
-export async function create(data, userId, boardId) {
-  // Put new tasks at the end of their column
+export async function create(data, userId, boardId, author) {
   const last = await Task.findOne({ createdBy: userId, boardId, status: data.status || 'todo' })
     .sort({ position: -1 });
   const position = last ? last.position + 1000 : 0;
-  return Task.create({ ...data, createdBy: userId, boardId, version: 1, position });
+  const task = await Task.create({ ...data, createdBy: userId, boardId, version: 1, position });
+  await logActivity(task._id, boardId, author, 'Created this task');
+  return task;
 }
 
 export async function getOne(id, userId) {
@@ -20,11 +22,28 @@ export async function getOne(id, userId) {
   return task;
 }
 
-export async function update(id, data, userId) {
+export async function update(id, data, userId, author) {
   const task = await getOne(id, userId);
+
   if (data.version !== undefined && data.version !== task.version) {
     throw new AppError('Conflict: task was modified by another user', 409, 'CONFLICT');
   }
+
+  // Log meaningful changes
+  if (data.status && data.status !== task.status) {
+    const labels = { todo: 'To Do', doing: 'In Progress', done: 'Done' };
+    await logActivity(task._id, task.boardId, author, `Moved to ${labels[data.status]}`);
+  }
+  if (data.priority && data.priority !== task.priority) {
+    await logActivity(task._id, task.boardId, author, `Changed priority to ${data.priority}`);
+  }
+  if (data.assignee && data.assignee !== task.assignee) {
+    await logActivity(task._id, task.boardId, author, `Reassigned to ${data.assignee}`);
+  }
+  if (data.description !== undefined && data.description !== task.description) {
+    await logActivity(task._id, task.boardId, author, 'Updated description');
+  }
+
   Object.assign(task, data);
   task.version += 1;
   await task.save();
@@ -32,7 +51,6 @@ export async function update(id, data, userId) {
 }
 
 export async function reorder(boardId, userId, orderedIds) {
-  // orderedIds = array of task IDs in new order
   const updates = orderedIds.map((id, index) =>
     Task.updateOne(
       { _id: id, createdBy: userId, boardId },

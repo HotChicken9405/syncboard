@@ -9,7 +9,12 @@ export async function list(req, res, next) {
 
 export async function create(req, res, next) {
   try {
-    const task = await taskService.create(req.body, req.user.id, req.params.boardId);
+    const task = await taskService.create(
+      req.body,
+      req.user.id,
+      req.params.boardId,
+      { id: req.user.id, name: req.user.name }
+    );
     res.status(201).json({ data: task });
   } catch (err) { next(err); }
 }
@@ -23,7 +28,12 @@ export async function getOne(req, res, next) {
 
 export async function update(req, res, next) {
   try {
-    const task = await taskService.update(req.params.id, req.body, req.user.id);
+    const task = await taskService.update(
+      req.params.id,
+      req.body,
+      req.user.id,
+      { id: req.user.id, name: req.user.name }
+    );
     res.json({ data: task });
   } catch (err) { next(err); }
 }

@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config/config.js';
+import { User } from '../models/User.js';
 import { UnauthorizedError } from '../utils/AppError.js';
 
-export function authenticate(req, res, next) {
+export async function authenticate(req, res, next) {
   const header = req.headers.authorization || '';
   const [scheme, token] = header.split(' ');
 
@@ -12,7 +13,9 @@ export function authenticate(req, res, next) {
 
   try {
     const payload = jwt.verify(token, config.jwtSecret);
-    req.user = { id: payload.sub, email: payload.email };
+    const user = await User.findById(payload.sub).select('name email');
+    if (!user) return next(new UnauthorizedError('User not found'));
+    req.user = { id: payload.sub, email: user.email, name: user.name };
     next();
   } catch (err) {
     const expired = err.name === 'TokenExpiredError';

@@ -1,5 +1,3 @@
-/* TaskDetailPage.module.css - Swiss Style */
-
 .page {
   min-height: 100vh;
   width: 100%;
@@ -10,7 +8,6 @@
   flex-direction: column;
 }
 
-/* Header bar — matches BoardPage */
 .header {
   background: #111;
   color: #fff;
@@ -45,28 +42,27 @@
   color: #555;
 }
 
-/* Body */
 .body {
   flex: 1;
   padding: 48px 40px;
   display: flex;
-  align-items: flex-start;
   justify-content: center;
 }
 
 .container {
   width: 100%;
-  max-width: 640px;
-  background: #fff;
-  border: 2px solid #111;
-  padding: 40px;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-/* Title section */
+/* Title */
 .titleRow {
-  margin-bottom: 40px;
-  padding-bottom: 24px;
-  border-bottom: 2px solid #111;
+  background: #fff;
+  border: 2px solid #111;
+  border-bottom: none;
+  padding: 32px 32px 24px;
 }
 
 .stepBadge {
@@ -75,40 +71,37 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   color: #6b6b6b;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .title {
   margin: 0;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
   color: #111;
 }
 
-/* Detail grid */
+/* Meta grid */
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0;
+  background: #fff;
+  border: 2px solid #111;
+  border-bottom: none;
 }
 
 .cell {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 24px 0;
+  gap: 6px;
+  padding: 20px 24px;
   border-bottom: 1px solid #e2e2dd;
 }
 
 .cell:nth-child(odd) {
-  padding-right: 32px;
   border-right: 1px solid #e2e2dd;
-}
-
-.cell:nth-child(even) {
-  padding-left: 32px;
 }
 
 .cell:nth-last-child(-n+2) {
@@ -116,7 +109,7 @@
 }
 
 .cellLabel {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -124,22 +117,289 @@
 }
 
 .cellValue {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: #111;
-  letter-spacing: -0.01em;
 }
 
 .priorityBadge {
   display: inline-block;
-  padding: 4px 10px;
-  font-size: 11px;
+  padding: 3px 8px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
   align-self: flex-start;
 }
 
-/* Loading / not found */
+/* Description */
+.descSection {
+  background: #fff;
+  border: 2px solid #111;
+  border-bottom: none;
+  padding: 24px 32px;
+}
+
+.sectionLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #6b6b6b;
+}
+
+.descHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.editBtn {
+  background: none;
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #d52b1e;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  text-transform: uppercase;
+}
+
+.descText {
+  margin: 0;
+  font-size: 14px;
+  color: #111;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.descEmpty {
+  color: #aaa;
+  cursor: pointer;
+  font-style: italic;
+}
+
+.descTextarea {
+  width: 100%;
+  border: 2px solid #111;
+  padding: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #111;
+  background: #f4f4f2;
+  resize: vertical;
+  box-sizing: border-box;
+  line-height: 1.7;
+}
+
+.descTextarea:focus {
+  outline: none;
+  border-color: #d52b1e;
+}
+
+.descActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.saveBtn {
+  padding: 10px 20px;
+  background: #111;
+  color: #fff;
+  border: 2px solid #111;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.saveBtn:hover { background: #d52b1e; border-color: #d52b1e; }
+.saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cancelDescBtn {
+  padding: 10px 20px;
+  background: transparent;
+  color: #111;
+  border: 2px solid #111;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Timeline */
+.timelineSection {
+  background: #fff;
+  border: 2px solid #111;
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.emptyTimeline {
+  margin: 0;
+  font-size: 13px;
+  color: #aaa;
+  font-style: italic;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.timelineAvatar {
+  width: 30px;
+  height: 30px;
+  background: #d52b1e;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.timelineContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.timelineMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.timelineAuthor {
+  font-size: 12px;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: 0.02em;
+}
+
+.timelineDate {
+  font-size: 11px;
+  color: #aaa;
+  letter-spacing: 0.02em;
+}
+
+/* Comment bubble */
+.commentBubble {
+  background: #f4f4f2;
+  border: 1.5px solid #e2e2dd;
+  padding: 10px 14px;
+  position: relative;
+}
+
+.commentText {
+  margin: 0;
+  font-size: 14px;
+  color: #111;
+  line-height: 1.6;
+}
+
+.deleteCommentBtn {
+  background: none;
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  color: #aaa;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  margin-top: 6px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: block;
+  transition: color 0.15s;
+}
+
+.deleteCommentBtn:hover { color: #d52b1e; }
+
+/* Activity text */
+.activityText {
+  margin: 0;
+  font-size: 13px;
+  color: #6b6b6b;
+  font-style: italic;
+}
+
+/* Comment form */
+.commentForm {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #e2e2dd;
+}
+
+.commentAvatar {
+  width: 30px;
+  height: 30px;
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.commentInputWrap {
+  flex: 1;
+  display: flex;
+  border: 2px solid #111;
+  overflow: hidden;
+}
+
+.commentInput {
+  flex: 1;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: inherit;
+  color: #111;
+}
+
+.commentInput:focus { outline: none; }
+.commentInput::placeholder { color: #aaa; }
+
+.commentSubmit {
+  padding: 10px 16px;
+  background: #111;
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+
+.commentSubmit:hover:not(:disabled) { background: #d52b1e; }
+.commentSubmit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Not found / loading */
 .center {
   display: flex;
   flex-direction: column;
@@ -149,8 +409,6 @@
   flex: 1;
   color: #6b6b6b;
   font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
 }
 
 .notFoundLabel {
