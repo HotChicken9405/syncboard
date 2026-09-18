@@ -105,5 +105,5 @@ export function useTasks(boardId) {
       .catch(err => alert(err.message));
   }, [online, boardId, state.tasks]);
 
-  return { state, addTask, moveTask, removeTask, online };
+  return { state, dispatch, addTask, moveTask, removeTask, online };
 }

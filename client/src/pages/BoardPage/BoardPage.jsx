@@ -1,8 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, closestCorners } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getBoards } from '../../api/boards.js';
+import { reorderTasks } from '../../api/tasks.js';
 import Column from '../../components/Column/Column.jsx';
 import AddTaskForm from '../../components/AddTaskForm/AddTaskForm.jsx';
 import TaskCard from '../../components/TaskCard/TaskCard.jsx';
@@ -20,7 +22,7 @@ export default function BoardPage() {
   const { boardId } = useParams();
   const navigate = useNavigate();
   const { logout, user } = useAuth();
-  const { state, addTask, moveTask, removeTask, online } = useTasks(boardId);
+  const { state, dispatch, addTask, moveTask, removeTask, online } = useTasks(boardId);
   const [board, setBoard] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [showAccount, setShowAccount] = useState(false);
@@ -60,7 +62,31 @@ export default function BoardPage() {
     const newStatus = overColumn?.id || overTask?.status;
 
     if (newStatus && newStatus !== task.status) {
+      // Moving to a different column
       moveTask(taskId, newStatus, task.version || 1);
+
+      // Save order for destination column
+      const destTasks = state.tasks
+        .filter(t => t.status === newStatus && String(t._id || t.id) !== taskId)
+        .map(t => String(t._id || t.id));
+      reorderTasks(boardId, [taskId, ...destTasks]);
+
+    } else if (overTask && task.status === overTask.status) {
+      // Reordering within the same column
+      const columnTasks = state.tasks.filter(t => t.status === task.status);
+      const oldIndex = columnTasks.findIndex(t => String(t._id || t.id) === taskId);
+      const newIndex = columnTasks.findIndex(t => String(t._id || t.id) === String(over.id));
+
+      if (oldIndex !== newIndex) {
+        const reordered = arrayMove(columnTasks, oldIndex, newIndex);
+        const orderedIds = reordered.map(t => String(t._id || t.id));
+
+        // Optimistic update
+        dispatch({ type: 'reordered', tasks: reordered, status: task.status });
+
+        // Persist to server
+        reorderTasks(boardId, orderedIds);
+      }
     }
   };
 

@@ -28,6 +28,13 @@ export async function update(req, res, next) {
   } catch (err) { next(err); }
 }
 
+export async function reorder(req, res, next) {
+  try {
+    await taskService.reorder(req.params.boardId, req.user.id, req.body.orderedIds);
+    res.json({ data: { message: 'Reordered' } });
+  } catch (err) { next(err); }
+}
+
 export async function remove(req, res, next) {
   try {
     await taskService.remove(req.params.id, req.user.id);

@@ -16,10 +16,19 @@ export function tasksReducer(state, action) {
       return {
         ...state,
         tasks: state.tasks.map(t =>
-          (t._id || t.id) === action.id 
-            ? { ...t, status: action.status, version: action.version || t.version } 
+          (t._id || t.id) === action.id
+            ? { ...t, status: action.status, version: action.version || t.version }
             : t
         ),
+      };
+    case 'reordered':
+      // Replace tasks of that status with new order, keep other statuses intact
+      return {
+        ...state,
+        tasks: [
+          ...state.tasks.filter(t => t.status !== action.status),
+          ...action.tasks,
+        ],
       };
     case 'deleted':
       return {

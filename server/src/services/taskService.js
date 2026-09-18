@@ -2,11 +2,15 @@ import { Task } from '../models/Task.js';
 import { NotFoundError, ForbiddenError, AppError } from '../utils/AppError.js';
 
 export async function list(userId, boardId) {
-  return Task.find({ createdBy: userId, boardId }).sort({ createdAt: -1 });
+  return Task.find({ createdBy: userId, boardId }).sort({ position: 1, createdAt: -1 });
 }
 
 export async function create(data, userId, boardId) {
-  return Task.create({ ...data, createdBy: userId, boardId, version: 1 });
+  // Put new tasks at the end of their column
+  const last = await Task.findOne({ createdBy: userId, boardId, status: data.status || 'todo' })
+    .sort({ position: -1 });
+  const position = last ? last.position + 1000 : 0;
+  return Task.create({ ...data, createdBy: userId, boardId, version: 1, position });
 }
 
 export async function getOne(id, userId) {
@@ -25,6 +29,17 @@ export async function update(id, data, userId) {
   task.version += 1;
   await task.save();
   return task;
+}
+
+export async function reorder(boardId, userId, orderedIds) {
+  // orderedIds = array of task IDs in new order
+  const updates = orderedIds.map((id, index) =>
+    Task.updateOne(
+      { _id: id, createdBy: userId, boardId },
+      { position: index * 1000 }
+    )
+  );
+  await Promise.all(updates);
 }
 
 export async function remove(id, userId) {
