@@ -2,16 +2,18 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getBoards, createBoard, deleteBoard } from '../../api/boards.js';
+import AccountSidebar from '../../components/AccountSidebar/AccountSidebar.jsx';
 import styles from './BoardsListPage.module.css';
 
 const COLORS = ['#d52b1e', '#2563eb', '#7c3aed', '#059669', '#d97706', '#db2777'];
 
 export default function BoardsListPage() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const [boards, setBoards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [showAccount, setShowAccount] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [color, setColor] = useState(COLORS[0]);
@@ -41,7 +43,11 @@ export default function BoardsListPage() {
     setBoards(prev => prev.filter(b => b._id !== id));
   };
 
-  if (loading) return <div className={styles.page}><div className={styles.center}>Loading...</div></div>;
+  if (loading) return (
+    <div className={styles.page}>
+      <div className={styles.center}>Loading...</div>
+    </div>
+  );
 
   return (
     <div className={styles.page}>
@@ -50,7 +56,15 @@ export default function BoardsListPage() {
           <h1 className={styles.logo}>SyncBoard</h1>
           <span className={styles.meta}>YOUR WORKSPACE</span>
         </div>
-        <button className={styles.logoutBtn} onClick={logout}>Logout</button>
+        <div className={styles.headerRight}>
+          <button className={styles.logoutBtn} onClick={logout}>Logout</button>
+          <button
+            className={styles.avatarBtn}
+            onClick={() => setShowAccount(true)}
+          >
+            {(user?.name || user?.email || '?').charAt(0).toUpperCase()}
+          </button>
+        </div>
       </header>
 
       <main className={styles.main}>
@@ -142,6 +156,8 @@ export default function BoardsListPage() {
           </div>
         )}
       </main>
+
+      {showAccount && <AccountSidebar onClose={() => setShowAccount(false)} />}
     </div>
   );
 }

@@ -1,37 +1,162 @@
+/* TaskDetailPage.module.css - Swiss Style */
+
 .page {
   min-height: 100vh;
   width: 100%;
-  background: #f9fafb;
+  background: #f4f4f2;
+  box-sizing: border-box;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header bar — matches BoardPage */
+.header {
+  background: #111;
+  color: #fff;
+  padding: 0 40px;
+  height: 60px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.backBtn {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s;
+  padding: 0;
+}
+
+.backBtn:hover { color: #fff; }
+
+.headerMeta {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #555;
+}
+
+/* Body */
+.body {
+  flex: 1;
+  padding: 48px 40px;
+  display: flex;
+  align-items: flex-start;
   justify-content: center;
-  padding: 24px;
-  box-sizing: border-box;
 }
 
 .container {
-  max-width: 600px;
   width: 100%;
-  padding: 24px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  max-width: 640px;
+  background: #fff;
+  border: 2px solid #111;
+  padding: 40px;
 }
 
+/* Title section */
+.titleRow {
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #111;
+}
+
+.stepBadge {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #6b6b6b;
+  margin-bottom: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: #111;
+}
+
+/* Detail grid */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 0;
+  border-bottom: 1px solid #e2e2dd;
+}
+
+.cell:nth-child(odd) {
+  padding-right: 32px;
+  border-right: 1px solid #e2e2dd;
+}
+
+.cell:nth-child(even) {
+  padding-left: 32px;
+}
+
+.cell:nth-last-child(-n+2) {
+  border-bottom: none;
+}
+
+.cellLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #6b6b6b;
+}
+
+.cellValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+  letter-spacing: -0.01em;
+}
+
+.priorityBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  align-self: flex-start;
+}
+
+/* Loading / not found */
 .center {
-  text-align: center;
-  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex: 1;
+  color: #6b6b6b;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
-.details {
-  margin-top: 24px;
-  line-height: 2;
+.notFoundLabel {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #6b6b6b;
 }
-
-.details p {
-  margin: 8px 0;
-}
-
-.low { color: #065f46; }
-.normal { color: #1e40af; }
-.high { color: #991b1b; }

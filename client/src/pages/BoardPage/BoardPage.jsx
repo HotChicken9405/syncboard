@@ -1,11 +1,12 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, closestCorners } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { getBoards } from '../../api/boards.js';
 import Column from '../../components/Column/Column.jsx';
 import AddTaskForm from '../../components/AddTaskForm/AddTaskForm.jsx';
 import TaskCard from '../../components/TaskCard/TaskCard.jsx';
+import AccountSidebar from '../../components/AccountSidebar/AccountSidebar.jsx';
 import { useTasks } from '../../hooks/useTasks.js';
 import styles from './BoardPage.module.css';
 
@@ -18,9 +19,11 @@ const COLUMNS = [
 export default function BoardPage() {
   const { boardId } = useParams();
   const navigate = useNavigate();
+  const { logout, user } = useAuth();
   const { state, addTask, moveTask, removeTask, online } = useTasks(boardId);
   const [board, setBoard] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
+  const [showAccount, setShowAccount] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, {
     activationConstraint: { distance: 5 },
@@ -36,7 +39,7 @@ export default function BoardPage() {
   }, [boardId]);
 
   const handleDragStart = (event) => {
-    const task = state.tasks.find(t => (t._id || t.id) === event.active.id);
+    const task = state.tasks.find(t => String(t._id || t.id) === String(event.active.id));
     setActiveTask(task || null);
   };
 
@@ -45,15 +48,16 @@ export default function BoardPage() {
     setActiveTask(null);
     if (!over) return;
 
-    const taskId = active.id;
-    const task = state.tasks.find(t => (t._id || t.id) === taskId);
+    const taskId = String(active.id);
+    const task = state.tasks.find(t => String(t._id || t.id) === taskId);
     if (!task) return;
 
-    // over.id is either a column id or another task id
     const overColumn = COLUMNS.find(c => c.id === over.id);
-    const newStatus = overColumn
-      ? overColumn.id
-      : state.tasks.find(t => (t._id || t.id) === over.id)?.status;
+    const overTask = !overColumn
+      ? state.tasks.find(t => String(t._id || t.id) === String(over.id))
+      : null;
+
+    const newStatus = overColumn?.id || overTask?.status;
 
     if (newStatus && newStatus !== task.status) {
       moveTask(taskId, newStatus, task.version || 1);
@@ -94,6 +98,13 @@ export default function BoardPage() {
         <div className={styles.headerRight}>
           {!online && <span className={styles.offline}>Offline</span>}
           <span className={styles.stats}>{doneCount}/{state.tasks.length} done</span>
+          <button className={styles.logoutBtn} onClick={logout}>Logout</button>
+          <button
+            className={styles.avatarBtn}
+            onClick={() => setShowAccount(true)}
+          >
+            {(user?.name || user?.email || '?').charAt(0).toUpperCase()}
+          </button>
         </div>
       </header>
 
@@ -134,6 +145,8 @@ export default function BoardPage() {
           </DragOverlay>
         </DndContext>
       </div>
+
+      {showAccount && <AccountSidebar onClose={() => setShowAccount(false)} />}
     </div>
   );
 }

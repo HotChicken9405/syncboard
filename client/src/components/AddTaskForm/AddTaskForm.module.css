@@ -1,29 +1,188 @@
+/* AddTaskForm.module.css - Swiss Style */
+
+/* Collapsed state — just a button */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 28px;
+  padding: 12px 24px;
+  background: #111;
+  color: #fff;
+  border: 2px solid #111;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.trigger:hover {
+  background: #d52b1e;
+  border-color: #d52b1e;
+}
+
+/* Expanded form */
 .form {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  background: #fff;
+  border: 2px solid #111;
+  padding: 24px;
+  margin-bottom: 28px;
+  max-width: 520px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-width: 400px;
+  gap: 20px;
 }
 
-.form h3 {
-  margin: 0 0 8px 0;
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #111;
 }
 
-.form input,
-.form select {
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #6b6b6b;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #aaa;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 2px;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+
+.closeBtn:hover {
+  color: #d52b1e;
+}
+
+/* Fields */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.field label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #111;
+}
+
+.field input,
+.field select {
+  padding: 12px 0;
+  border: none;
+  border-bottom: 2px solid #111;
+  background: transparent;
   font-size: 14px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #111;
+  transition: border-color 0.15s;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
 }
 
+.field input::placeholder {
+  color: #aaa;
+  font-weight: 300;
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-bottom-color: #d52b1e;
+}
+
+/* Side by side date + priority */
+.row {
+  display: flex;
+  gap: 24px;
+}
+
+/* Error */
 .error {
-  color: #dc2626;
-  font-size: 13px;
   margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid #d52b1e;
+  background: #fdf2f1;
+  font-size: 13px;
+  font-weight: 600;
+  color: #d52b1e;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 4px;
+  border-top: 1px solid #e2e2dd;
+}
+
+.submitBtn {
+  padding: 12px 24px;
+  background: #111;
+  color: #fff;
+  border: 2px solid #111;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.submitBtn:hover {
+  background: #d52b1e;
+  border-color: #d52b1e;
+}
+
+.cancelBtn {
+  padding: 12px 24px;
+  background: transparent;
+  color: #111;
+  border: 2px solid #111;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  transition: background 0.15s;
+}
+
+.cancelBtn:hover {
+  background: #f4f4f2;
+}
+
+/* Add at the bottom of AddTaskForm.module.css */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form {
+  animation: slideDown 0.2s ease forwards;
 }

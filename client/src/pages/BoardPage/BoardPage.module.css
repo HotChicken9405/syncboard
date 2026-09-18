@@ -103,3 +103,41 @@
   padding: 80px;
   color: #6b6b6b;
 }
+
+.logoutBtn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #444;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.logoutBtn:hover {
+  background: #d52b1e;
+  border-color: #d52b1e;
+}
+
+.avatarBtn {
+  width: 36px;
+  height: 36px;
+  background: #d52b1e;
+  color: #fff;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+
+.avatarBtn:hover { opacity: 0.85; }
