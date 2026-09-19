@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getTasks, updateTask } from '../../api/tasks.js';
+import { getColumns } from '../../api/columns.js';
 import { getComments, addComment, deleteComment, getActivity } from '../../api/comments.js';
 import styles from './TaskDetailPage.module.css';
 
@@ -10,16 +11,17 @@ export default function TaskDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [task, setTask] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [task, setTask]         = useState(null);
+  const [columns, setColumns]   = useState([]);
+  const [loading, setLoading]   = useState(true);
 
-  const [description, setDescription] = useState('');
-  const [editingDesc, setEditingDesc] = useState(false);
-  const [savingDesc, setSavingDesc] = useState(false);
+  const [description, setDescription]   = useState('');
+  const [editingDesc, setEditingDesc]   = useState(false);
+  const [savingDesc, setSavingDesc]     = useState(false);
 
-  const [comments, setComments] = useState([]);
-  const [activity, setActivity] = useState([]);
-  const [commentText, setCommentText] = useState('');
+  const [comments, setComments]                   = useState([]);
+  const [activity, setActivity]                   = useState([]);
+  const [commentText, setCommentText]             = useState('');
   const [submittingComment, setSubmittingComment] = useState(false);
 
   const descRef = useRef(null);
@@ -27,19 +29,25 @@ export default function TaskDetailPage() {
   useEffect(() => {
     Promise.all([
       getTasks(boardId),
+      getColumns(boardId),
       getComments(boardId, id),
       getActivity(boardId, id),
-    ]).then(([tasksRes, commentsRes, activityRes]) => {
+    ]).then(([tasksRes, colsRes, commentsRes, activityRes]) => {
       const found = tasksRes.data.find(t => (t._id || t.id) === id);
       setTask(found || null);
       setDescription(found?.description || '');
+      setColumns(colsRes.data);
       setComments(commentsRes.data);
       setActivity(activityRes.data);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, [id, boardId]);
 
-  // Merge comments + activity into one sorted timeline
+  const getColumnName = (columnId) => {
+    const col = columns.find(c => String(c._id) === String(columnId));
+    return col ? col.name : '—';
+  };
+
   const timeline = [
     ...comments.map(c => ({ ...c, _type: 'comment' })),
     ...activity.map(a => ({ ...a, _type: 'activity' })),
@@ -136,7 +144,6 @@ export default function TaskDetailPage() {
       <div className={styles.body}>
         <div className={styles.container}>
 
-          {/* Title + meta */}
           <div className={styles.titleRow}>
             <span className={styles.stepBadge}>— DETAILS</span>
             <h1 className={styles.title}>{task.title}</h1>
@@ -145,11 +152,11 @@ export default function TaskDetailPage() {
           <div className={styles.grid}>
             <div className={styles.cell}>
               <span className={styles.cellLabel}>Assignee</span>
-              <span className={styles.cellValue}>{task.assignee}</span>
+              <span className={styles.cellValue}>{task.assignee || '—'}</span>
             </div>
             <div className={styles.cell}>
-              <span className={styles.cellLabel}>Status</span>
-              <span className={styles.cellValue}>{task.status.toUpperCase()}</span>
+              <span className={styles.cellLabel}>Column</span>
+              <span className={styles.cellValue}>{getColumnName(task.columnId)}</span>
             </div>
             <div className={styles.cell}>
               <span className={styles.cellLabel}>Due Date</span>
@@ -161,12 +168,11 @@ export default function TaskDetailPage() {
                 className={styles.priorityBadge}
                 style={{ background: p.bg, color: p.color }}
               >
-                {task.priority.toUpperCase()}
+                {task.priority?.toUpperCase() || 'NORMAL'}
               </span>
             </div>
           </div>
 
-          {/* Description */}
           <div className={styles.descSection}>
             <div className={styles.descHeader}>
               <span className={styles.sectionLabel}>DESCRIPTION</span>
@@ -225,7 +231,6 @@ export default function TaskDetailPage() {
             )}
           </div>
 
-          {/* Activity & Comments Timeline */}
           <div className={styles.timelineSection}>
             <span className={styles.sectionLabel}>ACTIVITY & COMMENTS</span>
 
@@ -263,7 +268,6 @@ export default function TaskDetailPage() {
               ))}
             </div>
 
-            {/* Add Comment */}
             <form className={styles.commentForm} onSubmit={handleAddComment}>
               <div className={styles.commentAvatar}>
                 {initial(user?.name)}

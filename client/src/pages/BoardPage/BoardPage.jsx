@@ -7,11 +7,20 @@ import { getBoards } from '../../api/boards.js';
 import { reorderTasks } from '../../api/tasks.js';
 import { useColumns } from '../../hooks/useColumns.js';
 import { useTasks } from '../../hooks/useTasks.js';
+import { useFilteredTasks } from '../../hooks/useFilteredTasks.js';
 import Column from '../../components/Column/Column.jsx';
 import AddTaskForm from '../../components/AddTaskForm/AddTaskForm.jsx';
 import TaskCard from '../../components/TaskCard/TaskCard.jsx';
 import AccountSidebar from '../../components/AccountSidebar/AccountSidebar.jsx';
+import SearchFilterBar from '../../components/SearchFilterBar/SearchFilterBar.jsx';
 import styles from './BoardPage.module.css';
+
+const DEFAULT_FILTERS = {
+  search:    '',
+  priority:  'all',
+  dueFilter: 'all',
+  sortBy:    'position',
+};
 
 export default function BoardPage() {
   const { boardId }  = useParams();
@@ -25,6 +34,9 @@ export default function BoardPage() {
   const [showAccount, setShowAccount] = useState(false);
   const [addingCol, setAddingCol]     = useState(false);
   const [newColName, setNewColName]   = useState('');
+  const [filters, setFilters]         = useState(DEFAULT_FILTERS);
+
+  const filteredTasks = useFilteredTasks(state.tasks, filters);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -118,6 +130,8 @@ export default function BoardPage() {
       </header>
 
       <div className={styles.body}>
+
+        {/* Top bar */}
         <div className={styles.topBar}>
           <AddTaskForm onAdd={addTask} columns={columns} />
           {addingCol ? (
@@ -141,6 +155,14 @@ export default function BoardPage() {
           )}
         </div>
 
+        {/* Search & Filter bar */}
+        <SearchFilterBar
+          filters={filters}
+          onChange={setFilters}
+          totalResults={filteredTasks.length}
+          totalTasks={state.tasks.length}
+        />
+
         <DndContext
           sensors={sensors}
           collisionDetection={closestCorners}
@@ -153,7 +175,7 @@ export default function BoardPage() {
                 key={col._id}
                 id={col._id}
                 title={col.name}
-                tasks={state.tasks.filter(t => String(t.columnId) === String(col._id))}
+                tasks={filteredTasks.filter(t => String(t.columnId) === String(col._id))}
                 boardId={boardId}
                 onDeleteTask={removeTask}
                 onRename={renameColumn}
