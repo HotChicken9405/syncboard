@@ -7,7 +7,7 @@ export async function list(userId, boardId) {
 }
 
 export async function create(data, userId, boardId, author) {
-  const last = await Task.findOne({ createdBy: userId, boardId, status: data.status || 'todo' })
+  const last = await Task.findOne({ createdBy: userId, boardId, columnId: data.columnId })
     .sort({ position: -1 });
   const position = last ? last.position + 1000 : 0;
   const task = await Task.create({ ...data, createdBy: userId, boardId, version: 1, position });
@@ -29,10 +29,8 @@ export async function update(id, data, userId, author) {
     throw new AppError('Conflict: task was modified by another user', 409, 'CONFLICT');
   }
 
-  // Log meaningful changes
-  if (data.status && data.status !== task.status) {
-    const labels = { todo: 'To Do', doing: 'In Progress', done: 'Done' };
-    await logActivity(task._id, task.boardId, author, `Moved to ${labels[data.status]}`);
+  if (data.columnId && data.columnId !== task.columnId?.toString()) {
+    await logActivity(task._id, task.boardId, author, `Moved to another column`);
   }
   if (data.priority && data.priority !== task.priority) {
     await logActivity(task._id, task.boardId, author, `Changed priority to ${data.priority}`);

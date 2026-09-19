@@ -4,7 +4,10 @@ import * as api from '../api/tasks.js';
 import { getCachedTasks, cacheTasks, getOfflineQueue, addToQueue, clearQueue } from '../utils/storage.js';
 
 export function useTasks(boardId) {
-  const [state, dispatch] = useReducer(tasksReducer, { ...initialState, tasks: getCachedTasks(boardId) });
+  const [state, dispatch] = useReducer(tasksReducer, {
+    ...initialState,
+    tasks: getCachedTasks(boardId),
+  });
   const [online, setOnline] = useState(true);
 
   useEffect(() => {
@@ -38,11 +41,11 @@ export function useTasks(boardId) {
     if (queue.length === 0) return;
     for (const action of queue) {
       try {
-        if (action.type === 'added') await api.createTask(action.boardId, action.task);
-        else if (action.type === 'moved') await api.updateTask(action.boardId, action.id, { status: action.status, version: action.version });
-        else if (action.type === 'deleted') await api.deleteTask(action.boardId, action.id);
+        if (action.type === 'added')   await api.createTask(action.boardId, action.task);
+        if (action.type === 'moved')   await api.updateTask(action.boardId, action.id, { columnId: action.columnId, version: action.version });
+        if (action.type === 'deleted') await api.deleteTask(action.boardId, action.id);
       } catch (err) {
-        if (err.message.includes('Conflict')) alert(`Conflict detected for "${action.task?.title || action.id}"`);
+        if (err.message.includes('Conflict')) alert(`Conflict for "${action.task?.title || action.id}"`);
       }
     }
     clearQueue();
@@ -71,20 +74,20 @@ export function useTasks(boardId) {
       .catch(err => alert(err.message));
   }, [online, boardId, state.tasks]);
 
-  const moveTask = useCallback((id, status, currentVersion) => {
+  const moveTask = useCallback((id, columnId, currentVersion) => {
     if (!online) {
-      addToQueue({ type: 'moved', boardId, id, status, version: currentVersion });
-      dispatch({ type: 'moved', id, status });
-      cacheTasks(boardId, state.tasks.map(t => (t._id || t.id) === id ? { ...t, status } : t));
+      addToQueue({ type: 'moved', boardId, id, columnId, version: currentVersion });
+      dispatch({ type: 'moved', id, columnId });
+      cacheTasks(boardId, state.tasks.map(t => (t._id || t.id) === id ? { ...t, columnId } : t));
       return;
     }
-    api.updateTask(boardId, id, { status, version: currentVersion })
+    api.updateTask(boardId, id, { columnId, version: currentVersion })
       .then(res => {
-        dispatch({ type: 'moved', id, status: res.data.status, version: res.data.version });
+        dispatch({ type: 'moved', id, columnId: res.data.columnId, version: res.data.version });
         cacheTasks(boardId, state.tasks.map(t => (t._id || t.id) === id ? res.data : t));
       })
       .catch(err => {
-        if (err.message.includes('Conflict')) alert('This task was modified by another user. Refresh to see latest.');
+        if (err.message.includes('Conflict')) alert('Task was modified by another user. Refresh to see latest.');
         else alert(err.message);
       });
   }, [online, boardId, state.tasks]);

@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import styles from './AddTaskForm.module.css';
 
-export default function AddTaskForm({ onAdd }) {
-  const [title, setTitle] = useState('');
+export default function AddTaskForm({ onAdd, columns }) {
+  const [title, setTitle]       = useState('');
   const [assignee, setAssignee] = useState('');
-  const [dueDate, setDueDate] = useState('');
+  const [dueDate, setDueDate]   = useState('');
   const [priority, setPriority] = useState('normal');
-  const [error, setError] = useState('');
-  const [open, setOpen] = useState(false);
+  const [columnId, setColumnId] = useState(columns?.[0]?._id || '');
+  const [error, setError]       = useState('');
+  const [open, setOpen]         = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,50 +18,35 @@ export default function AddTaskForm({ onAdd }) {
       setError('Title must be at least 3 characters');
       return;
     }
-
+    if (!columnId) {
+      setError('Please select a column');
+      return;
+    }
     const selectedDate = new Date(dueDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    if (selectedDate < today) {
+    if (dueDate && selectedDate < today) {
       setError('Due date cannot be in the past');
       return;
     }
 
-    onAdd({
-      title: title.trim(),
-      assignee: assignee.trim() || 'Unassigned',
-      status: 'todo',
-      dueDate,
-      priority,
-    });
-
-    setTitle('');
-    setAssignee('');
-    setDueDate('');
-    setPriority('normal');
+    onAdd({ title: title.trim(), assignee: assignee.trim() || 'Unassigned', columnId, dueDate, priority });
+    setTitle(''); setAssignee(''); setDueDate(''); setPriority('normal');
+    setColumnId(columns?.[0]?._id || '');
     setOpen(false);
   };
 
-  if (!open) {
-    return (
-      <button className={styles.trigger} onClick={() => setOpen(true)}>
-        + New Task
-      </button>
-    );
-  }
+  if (!open) return (
+    <button className={styles.trigger} onClick={() => setOpen(true)}>
+      + New Task
+    </button>
+  );
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.formHeader}>
         <span className={styles.badge}>NEW TASK</span>
-        <button
-          type="button"
-          className={styles.closeBtn}
-          onClick={() => setOpen(false)}
-        >
-          ×
-        </button>
+        <button type="button" className={styles.closeBtn} onClick={() => setOpen(false)}>×</button>
       </div>
 
       {error && <p className={styles.error}>{error}</p>}
@@ -89,21 +75,16 @@ export default function AddTaskForm({ onAdd }) {
 
       <div className={styles.row}>
         <div className={styles.field}>
-          <label>Due Date</label>
-          <input
-            type="date"
-            value={dueDate}
-            onChange={e => setDueDate(e.target.value)}
-            required
-          />
+          <label>Column</label>
+          <select value={columnId} onChange={e => setColumnId(e.target.value)} required>
+            {columns?.map(col => (
+              <option key={col._id} value={col._id}>{col.name}</option>
+            ))}
+          </select>
         </div>
-
         <div className={styles.field}>
           <label>Priority</label>
-          <select
-            value={priority}
-            onChange={e => setPriority(e.target.value)}
-          >
+          <select value={priority} onChange={e => setPriority(e.target.value)}>
             <option value="low">Low</option>
             <option value="normal">Normal</option>
             <option value="high">High</option>
@@ -111,17 +92,18 @@ export default function AddTaskForm({ onAdd }) {
         </div>
       </div>
 
+      <div className={styles.field}>
+        <label>Due Date</label>
+        <input
+          type="date"
+          value={dueDate}
+          onChange={e => setDueDate(e.target.value)}
+        />
+      </div>
+
       <div className={styles.actions}>
-        <button type="submit" className={styles.submitBtn}>
-          Add Task →
-        </button>
-        <button
-          type="button"
-          className={styles.cancelBtn}
-          onClick={() => setOpen(false)}
-        >
-          Cancel
-        </button>
+        <button type="submit" className={styles.submitBtn}>Add Task →</button>
+        <button type="button" className={styles.cancelBtn} onClick={() => setOpen(false)}>Cancel</button>
       </div>
     </form>
   );

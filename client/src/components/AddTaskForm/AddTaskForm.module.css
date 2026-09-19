@@ -4,8 +4,7 @@
 .trigger {
   display: inline-flex;
   align-items: center;
-  margin-bottom: 28px;
-  padding: 12px 24px;
+  padding: 12px 24px;      /* ← match addColBtn padding */
   background: #111;
   color: #fff;
   border: 2px solid #111;

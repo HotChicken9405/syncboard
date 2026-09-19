@@ -66,7 +66,7 @@
 .headerRight {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .stats {
@@ -87,23 +87,6 @@
   text-transform: uppercase;
 }
 
-.body {
-  padding: 32px 40px;
-  flex: 1;
-}
-
-.columns {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-}
-
-.center {
-  text-align: center;
-  padding: 80px;
-  color: #6b6b6b;
-}
-
 .logoutBtn {
   padding: 8px 16px;
   background: transparent;
@@ -114,14 +97,11 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s;
   font-family: inherit;
 }
 
-.logoutBtn:hover {
-  background: #d52b1e;
-  border-color: #d52b1e;
-}
+.logoutBtn:hover { background: #d52b1e; border-color: #d52b1e; }
 
 .avatarBtn {
   width: 36px;
@@ -137,7 +117,112 @@
   align-items: center;
   justify-content: center;
   transition: opacity 0.15s;
-  flex-shrink: 0;
 }
 
 .avatarBtn:hover { opacity: 0.85; }
+
+.body {
+  padding: 32px 40px;
+  flex: 1;
+}
+
+/* Top bar: New Task + Add Column */
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+/* Columns grid — 4 per row, wraps automatically */
+.columns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.center {
+  text-align: center;
+  padding: 80px;
+  color: #6b6b6b;
+}
+
+/* Add Column button */
+.addColBtn {
+  padding: 12px 24px;
+  background: transparent;
+  border: 2px dashed #aaa;
+  color: #aaa;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.addColBtn:hover {
+  border-color: #111;
+  color: #111;
+}
+
+/* Add Column inline form */
+.addColForm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid #111;
+  padding: 8px 12px;
+  background: #fff;
+}
+
+.addColInput {
+  border: none;
+  border-bottom: 2px solid #111;
+  background: transparent;
+  font-size: 13px;
+  font-family: inherit;
+  color: #111;
+  padding: 4px 0;
+  font-weight: 600;
+  min-width: 140px;
+}
+
+.addColInput:focus { outline: none; border-color: #d52b1e; }
+
+.addColActions {
+  display: flex;
+  gap: 6px;
+}
+
+.addColSave {
+  padding: 6px 14px;
+  background: #111;
+  color: #fff;
+  border: 2px solid #111;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.addColSave:hover { background: #d52b1e; border-color: #d52b1e; }
+
+.addColCancel {
+  padding: 6px 10px;
+  background: transparent;
+  color: #aaa;
+  border: 2px solid #ddd;
+  font-size: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+
+.addColCancel:hover { color: #d52b1e; border-color: #d52b1e; }

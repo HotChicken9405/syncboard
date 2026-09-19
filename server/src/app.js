@@ -3,6 +3,7 @@ import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import boardRoutes from './routes/boardRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
+import columnRoutes from './routes/columnRoutes.js';
 import commentRoutes from './routes/commentRoutes.js';
 import { authenticate } from './middleware/authenticate.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
@@ -18,6 +19,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/boards', authenticate, boardRoutes);
+app.use('/api/boards/:boardId/columns', authenticate, columnRoutes);
 app.use('/api/boards/:boardId/tasks', authenticate, taskRoutes);
 app.use('/api/boards/:boardId/tasks/:id', authenticate, commentRoutes);
 

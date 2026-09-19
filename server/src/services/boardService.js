@@ -1,13 +1,17 @@
 import { Board } from '../models/Board.js';
 import { Task } from '../models/Task.js';
+import { Column } from '../models/Column.js';
 import { NotFoundError, ForbiddenError } from '../utils/AppError.js';
+import { seedDefaults } from './columnService.js';
 
 export async function list(userId) {
   return Board.find({ createdBy: userId }).sort({ createdAt: -1 });
 }
 
 export async function create(data, userId) {
-  return Board.create({ ...data, createdBy: userId });
+  const board = await Board.create({ ...data, createdBy: userId });
+  await seedDefaults(board._id, userId);
+  return board;
 }
 
 export async function getOne(boardId, userId) {
@@ -26,6 +30,7 @@ export async function update(boardId, data, userId) {
 
 export async function remove(boardId, userId) {
   await getOne(boardId, userId);
-  await Task.deleteMany({ boardId }); // delete all tasks in board
+  await Task.deleteMany({ boardId });
+  await Column.deleteMany({ boardId });
   await Board.deleteOne({ _id: boardId });
 }

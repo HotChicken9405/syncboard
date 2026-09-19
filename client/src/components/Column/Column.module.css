@@ -1,10 +1,11 @@
 .column {
   background: #fff;
   border: 2px solid #111;
-  padding: 16px;
-  min-width: 300px;
-  flex: 1;
+  display: flex;
+  flex-direction: column;
   transition: background 0.15s ease;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .over {
@@ -14,30 +15,82 @@
 
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin: 0 0 16px 0;
-  font-size: 13px;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 2px solid #111;
+  gap: 8px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #111;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #111;
+  cursor: default;
+  flex: 1;
+  user-select: none;
 }
 
 .count {
   background: #111;
   color: #fff;
-  padding: 2px 8px;
-  font-size: 11px;
+  padding: 2px 7px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.05em;
 }
+
+.renameInput {
+  flex: 1;
+  border: none;
+  border-bottom: 2px solid #d52b1e;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #111;
+  font-family: inherit;
+  padding: 2px 0;
+}
+
+.renameInput:focus { outline: none; }
+
+.deleteColBtn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 2px;
+  transition: color 0.15s;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.deleteColBtn:hover { color: #d52b1e; }
 
 .tasks {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding: 12px;
+  flex: 1;
   min-height: 80px;
 }
+
+.empty {
+  margin: 0;
+  padding: 0 12px 12px;
+  font-size: 12px;
+  color: #ccc;
+  font-style: italic;
+  text-align: center;
+}
+
