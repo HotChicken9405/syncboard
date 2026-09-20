@@ -77,6 +77,7 @@ export default function Column({ id, title, tasks, boardId, onDeleteTask, onRena
               key={String(task._id || task.id)}
               task={task}
               boardId={boardId}
+              columnName={title}
               onDelete={onDeleteTask}
             />
           ))}

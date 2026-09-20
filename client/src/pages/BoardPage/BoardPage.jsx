@@ -186,7 +186,7 @@ export default function BoardPage() {
 
           <DragOverlay>
             {activeTask && (
-              <TaskCard task={activeTask} boardId={boardId} isDragging onDelete={() => {}} />
+              <TaskCard task={activeTask} boardId={boardId} columnName="" isDragging onDelete={() => {}} />
             )}
           </DragOverlay>
         </DndContext>

@@ -1,17 +1,38 @@
 .card {
   background: #f4f4f2;
   border: 1.5px solid #e2e2dd;
+  border-left: 4px solid transparent;
   padding: 14px 14px 14px 8px;
   display: flex;
   align-items: flex-start;
   gap: 8px;
   position: relative;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
+  box-sizing: border-box;
 }
 
 .card:hover {
   box-shadow: 3px 3px 0 #111;
   transform: translate(-1px, -1px);
+}
+
+/* Due date card states */
+.cardOverdue {
+  background: #fff5f5;
+  border-color: #fecaca;
+  border-left-color: #d52b1e;
+}
+
+.cardToday {
+  background: #fffbeb;
+  border-color: #fde68a;
+  border-left-color: #d97706;
+}
+
+.cardSoon {
+  background: #fff;
+  border-left-color: #d97706;
+  border-left-width: 4px;
 }
 
 .dragging {
@@ -24,8 +45,8 @@
 .dragHandle {
   cursor: grab;
   color: #bbb;
-  font-size: 22px;    
-  padding: 4px 6px;   
+  font-size: 22px;
+  padding: 4px 6px;
   flex-shrink: 0;
   user-select: none;
   line-height: 1;
@@ -57,6 +78,21 @@
   color: #6b6b6b;
 }
 
+/* Due date text colors in meta */
+.dueNormal  { color: #6b6b6b; }
+.due_overdue { color: #d52b1e; font-weight: 700; }
+.due_today   { color: #d97706; font-weight: 700; }
+.due_soon    { color: #d97706; }
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Priority badge */
 .badge {
   display: inline-block;
   padding: 2px 8px;
@@ -69,6 +105,31 @@
 .low    { background: #d1fae5; color: #065f46; }
 .normal { background: #dbeafe; color: #1e40af; }
 .high   { background: #fee2e2; color: #991b1b; }
+
+/* Due date badge */
+.dueBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.dueBadge_overdue {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.dueBadge_today {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.dueBadge_soon {
+  background: #fef9c3;
+  color: #854d0e;
+}
 
 .deleteBtn {
   position: absolute;
