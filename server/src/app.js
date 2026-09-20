@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import mongoSanitize from 'express-mongo-sanitize'; // ← ADD THIS
 import authRoutes from './routes/authRoutes.js';
 import boardRoutes from './routes/boardRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
@@ -12,21 +13,20 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
-// Security headers
 app.use(helmet());
+app.use(mongoSanitize()); // ← ADD THIS (after helmet, before routes)
 
-// Rate limiters
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,                   // 10 attempts per window
+  windowMs: 15 * 60 * 1000,
+  max: 10,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: { message: 'Too many attempts, please try again in 15 minutes', code: 'RATE_LIMITED' } }
 });
 
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,                  // 200 requests per window
+  windowMs: 15 * 60 * 1000,
+  max: 200,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: { message: 'Too many requests, please slow down', code: 'RATE_LIMITED' } }
@@ -39,10 +39,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
 });
 
-// Auth routes — strict limit (brute force protection)
 app.use('/api/auth', authLimiter, authRoutes);
-
-// All other API routes — general limit
 app.use('/api/boards', apiLimiter, authenticate, boardRoutes);
 app.use('/api/boards/:boardId/columns', apiLimiter, authenticate, columnRoutes);
 app.use('/api/boards/:boardId/tasks', apiLimiter, authenticate, taskRoutes);
