@@ -13,9 +13,12 @@ export function useTasks(boardId) {
   useEffect(() => {
     const checkOnline = async () => {
       try {
-        await fetch('http://localhost:4000/api/health', { method: 'HEAD', mode: 'no-cors' });
-        setOnline(true);
-      } catch { setOnline(false); }
+        const res = await fetch('http://localhost:4000/api/health');
+        if (res.ok) setOnline(true);
+        else setOnline(false);
+      } catch {
+        setOnline(false);
+      }
     };
     checkOnline();
     const interval = setInterval(checkOnline, 5000);

@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import mongoSanitize from 'express-mongo-sanitize'; // ← ADD THIS
+import mongoSanitize from 'express-mongo-sanitize';
 import authRoutes from './routes/authRoutes.js';
 import boardRoutes from './routes/boardRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
@@ -13,9 +13,34 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
+// Security headers
 app.use(helmet());
-app.use(mongoSanitize()); // ← ADD THIS (after helmet, before routes)
 
+// NoSQL injection protection
+app.use(mongoSanitize());
+
+// CORS — tightened
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:4173',
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
+
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ extended: true, limit: '100kb' }));
+
+// Rate limiters
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -31,9 +56,6 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: { message: 'Too many requests, please slow down', code: 'RATE_LIMITED' } }
 });
-
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
-app.use(express.json({ limit: '100kb' }));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
