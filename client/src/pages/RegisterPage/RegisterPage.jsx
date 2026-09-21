@@ -98,11 +98,11 @@ export default function RegisterPage() {
                 <input
                   id="password"
                   type="password"
-                  placeholder="Min. 6 characters"
+                  placeholder="Min 8 chars, uppercase, number, symbol"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   required
-                  minLength={6}
+                  minLength={8}
                 />
                 <div className={styles.bgTop}><div className={styles.bgInner}></div></div>
                 <div className={styles.bgRight}><div className={styles.bgInner}></div></div>
