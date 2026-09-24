@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext.jsx';
+import { AuthProvider } from './context/AuthProvider.jsx';
+import { useAuth } from './context/useAuth.js';
 import BoardsListPage from './pages/BoardsListPage/BoardsListPage.jsx';
 import BoardPage from './pages/BoardPage/BoardPage.jsx';
 import TaskDetailPage from './pages/TaskDetailPage/TaskDetailPage.jsx';

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../../context/AuthContext.jsx';
+import { useAuth } from '../../context/useAuth.js';
 import { getTasks, updateTask } from '../../api/tasks.js';
 import { getColumns } from '../../api/columns.js';
 import { getComments, addComment, deleteComment, getActivity } from '../../api/comments.js';

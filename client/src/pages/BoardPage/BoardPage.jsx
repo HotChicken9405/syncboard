@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, closestCorners } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import { useAuth } from '../../context/AuthContext.jsx';
+import { useAuth } from '../../context/useAuth.js';
 import { getBoards } from '../../api/boards.js';
 import { reorderTasks } from '../../api/tasks.js';
 import { useColumns } from '../../hooks/useColumns.js';

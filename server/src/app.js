@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
+import cookieParser from 'cookie-parser';
 import authRoutes from './routes/authRoutes.js';
 import boardRoutes from './routes/boardRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
@@ -13,13 +14,9 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
-// Security headers
 app.use(helmet());
-
-// NoSQL injection protection
 app.use(mongoSanitize());
 
-// CORS — tightened
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:4173',
@@ -39,8 +36,8 @@ app.use(cors({
 
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true, limit: '100kb' }));
+app.use(cookieParser());
 
-// Rate limiters
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,

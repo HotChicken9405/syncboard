@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext.jsx';
+import { useAuth } from '../../context/useAuth.js';
 import { getBoards, createBoard, deleteBoard } from '../../api/boards.js';
 import AccountSidebar from '../../components/AccountSidebar/AccountSidebar.jsx';
 import styles from './BoardsListPage.module.css';
