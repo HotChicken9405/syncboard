@@ -10,14 +10,14 @@ const COLORS = ['#d52b1e', '#2563eb', '#7c3aed', '#059669', '#d97706', '#db2777'
 export default function BoardsListPage() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const [boards, setBoards] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+  const [boards, setBoards]         = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [showForm, setShowForm]     = useState(false);
   const [showAccount, setShowAccount] = useState(false);
-  const [name, setName] = useState('');
+  const [name, setName]             = useState('');
   const [description, setDescription] = useState('');
-  const [color, setColor] = useState(COLORS[0]);
-  const [error, setError] = useState('');
+  const [color, setColor]           = useState(COLORS[0]);
+  const [error, setError]           = useState('');
 
   useEffect(() => {
     getBoards()
@@ -44,8 +44,41 @@ export default function BoardsListPage() {
   };
 
   if (loading) return (
-    <div className={styles.page}>
-      <div className={styles.center}>Loading...</div>
+    <div className={styles.page}><div className={styles.center}>Loading...</div></div>
+  );
+
+  // Split boards into owned and shared
+  const ownedBoards  = boards.filter(b => String(b.createdBy) === String(user?.id));
+  const sharedBoards = boards.filter(b => String(b.createdBy) !== String(user?.id));
+
+  const BoardCard = ({ board, owned }) => (
+    <div
+      className={styles.card}
+      onClick={() => navigate(`/boards/${board._id}`)}
+    >
+      <div className={styles.cardTop} style={{ background: board.color }}>
+        <span className={styles.cardInitial}>
+          {board.name.charAt(0).toUpperCase()}
+        </span>
+      </div>
+      <div className={styles.cardBody}>
+        <h3 className={styles.cardName}>{board.name}</h3>
+        {board.description && (
+          <p className={styles.cardDesc}>{board.description}</p>
+        )}
+        <p className={styles.cardDate}>
+          {new Date(board.createdAt).toLocaleDateString()}
+        </p>
+        {!owned && (
+          <span className={styles.sharedBadge}>Shared with you</span>
+        )}
+      </div>
+      {owned && (
+        <button
+          className={styles.deleteBtn}
+          onClick={(e) => handleDelete(e, board._id)}
+        >×</button>
+      )}
     </div>
   );
 
@@ -58,10 +91,7 @@ export default function BoardsListPage() {
         </div>
         <div className={styles.headerRight}>
           <button className={styles.logoutBtn} onClick={logout}>Logout</button>
-          <button
-            className={styles.avatarBtn}
-            onClick={() => setShowAccount(true)}
-          >
+          <button className={styles.avatarBtn} onClick={() => setShowAccount(true)}>
             {(user?.name || user?.email || '?').charAt(0).toUpperCase()}
           </button>
         </div>
@@ -120,40 +150,31 @@ export default function BoardsListPage() {
           </form>
         )}
 
-        {boards.length === 0 && !showForm ? (
+        {/* Owned boards */}
+        {ownedBoards.length === 0 && !showForm ? (
           <div className={styles.empty}>
             <p>No boards yet. Create your first one!</p>
           </div>
         ) : (
           <div className={styles.grid}>
-            {boards.map(board => (
-              <div
-                key={board._id}
-                className={styles.card}
-                onClick={() => navigate(`/boards/${board._id}`)}
-                style={{ '--board-color': board.color }}
-              >
-                <div className={styles.cardTop} style={{ background: board.color }}>
-                  <span className={styles.cardInitial}>
-                    {board.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div className={styles.cardBody}>
-                  <h3 className={styles.cardName}>{board.name}</h3>
-                  {board.description && (
-                    <p className={styles.cardDesc}>{board.description}</p>
-                  )}
-                  <p className={styles.cardDate}>
-                    {new Date(board.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-                <button
-                  className={styles.deleteBtn}
-                  onClick={(e) => handleDelete(e, board._id)}
-                >×</button>
-              </div>
+            {ownedBoards.map(board => (
+              <BoardCard key={board._id} board={board} owned />
             ))}
           </div>
+        )}
+
+        {/* Shared boards */}
+        {sharedBoards.length > 0 && (
+          <>
+            <div className={styles.sectionDivider}>
+              <h2 className={styles.sectionTitle}>Shared With You</h2>
+            </div>
+            <div className={styles.grid}>
+              {sharedBoards.map(board => (
+                <BoardCard key={board._id} board={board} owned={false} />
+              ))}
+            </div>
+          </>
         )}
       </main>
 

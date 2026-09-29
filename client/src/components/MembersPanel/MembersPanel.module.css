@@ -1,0 +1,249 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  height: 100vh;
+  background: #fff;
+  border-left: 2px solid #111;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  animation: slideIn 0.25s ease forwards;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 28px;
+  height: 60px;
+  background: #111;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.headerLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #aaa;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.15s;
+  font-family: inherit;
+}
+
+.closeBtn:hover { color: #fff; }
+
+.inviteSection {
+  padding: 28px;
+  border-bottom: 2px solid #111;
+}
+
+.membersSection {
+  padding: 28px;
+  flex: 1;
+}
+
+.sectionTitle {
+  margin: 0 0 20px 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #111;
+}
+
+.inviteForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #111;
+}
+
+.field input {
+  padding: 10px 0;
+  border: none;
+  border-bottom: 2px solid #111;
+  background: transparent;
+  font-size: 14px;
+  font-family: inherit;
+  color: #111;
+  transition: border-color 0.15s;
+}
+
+.field input:focus {
+  outline: none;
+  border-bottom-color: #d52b1e;
+}
+
+.field input::placeholder { color: #aaa; }
+
+.error {
+  margin: 0;
+  padding: 8px 12px;
+  border-left: 3px solid #d52b1e;
+  background: #fdf2f1;
+  font-size: 12px;
+  font-weight: 600;
+  color: #d52b1e;
+}
+
+.success {
+  margin: 0;
+  padding: 8px 12px;
+  border-left: 3px solid #059669;
+  background: #f0fdf4;
+  font-size: 12px;
+  font-weight: 600;
+  color: #059669;
+}
+
+.inviteBtn {
+  padding: 12px 20px;
+  background: #111;
+  color: #fff;
+  border: 2px solid #111;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+  align-self: flex-start;
+}
+
+.inviteBtn:hover { background: #d52b1e; border-color: #d52b1e; }
+.inviteBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.memberList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.memberRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e2dd;
+}
+
+.memberAvatar {
+  width: 36px;
+  height: 36px;
+  background: #d52b1e;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.memberInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.memberName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.memberEmail {
+  font-size: 11px;
+  color: #aaa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.roleBadge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+
+.owner  { background: #111; color: #fff; }
+.member { background: #e2e2dd; color: #6b6b6b; }
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 2px;
+  transition: color 0.15s;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.removeBtn:hover { color: #d52b1e; }
+
+.empty {
+  font-size: 13px;
+  color: #aaa;
+  font-style: italic;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .panel { width: 100vw; }
+}

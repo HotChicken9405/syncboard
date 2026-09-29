@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { AuthContext } from './AuthContext.js';
 import { login as apiLogin, register as apiRegister, logout as apiLogout } from '../api/auth.js';
 import { setAccessToken } from '../api/client.js';
+import { connectSocket, disconnectSocket } from '../socket/socket.js';
 
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
@@ -17,16 +18,16 @@ export function AuthProvider({ children }) {
         if (data?.data?.token) {
           setAccessToken(data.data.token);
           setUser(data.data.user);
+          connectSocket(data.data.token);
         }
       })
-      .catch(() => {
-        // No valid session — user needs to log in
-      })
+      .catch(() => {})
       .finally(() => setLoading(false));
 
     const handleExpired = () => {
       setUser(null);
       setAccessToken(null);
+      disconnectSocket();
     };
     window.addEventListener('auth:expired', handleExpired);
     return () => window.removeEventListener('auth:expired', handleExpired);
@@ -36,6 +37,7 @@ export function AuthProvider({ children }) {
     const res = await apiLogin(credentials);
     setAccessToken(res.data.token);
     setUser(res.data.user);
+    connectSocket(res.data.token);
     return res.data;
   };
 
@@ -43,15 +45,17 @@ export function AuthProvider({ children }) {
     const res = await apiRegister(data);
     setAccessToken(res.data.token);
     setUser(res.data.user);
+    connectSocket(res.data.token);
     return res.data;
   };
 
   const logout = async () => {
     try { await apiLogout(); } catch {
-      // continue logout even if server call fails
+      // No valid session — user needs to log in
     }
     setAccessToken(null);
     setUser(null);
+    disconnectSocket();
   };
 
   const updateUser = (updatedUser) => {

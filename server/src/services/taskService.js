@@ -3,11 +3,12 @@ import { NotFoundError, ForbiddenError, AppError } from '../utils/AppError.js';
 import { logActivity } from './commentService.js';
 
 export async function list(userId, boardId) {
-  return Task.find({ createdBy: userId, boardId }).sort({ position: 1, createdAt: -1 });
+  // All members see ALL tasks on the board
+  return Task.find({ boardId }).sort({ position: 1, createdAt: -1 });
 }
 
 export async function create(data, userId, boardId, author) {
-  const last = await Task.findOne({ createdBy: userId, boardId, columnId: data.columnId })
+  const last = await Task.findOne({ boardId, columnId: data.columnId })
     .sort({ position: -1 });
   const position = last ? last.position + 1000 : 0;
   const task = await Task.create({ ...data, createdBy: userId, boardId, version: 1, position });
@@ -18,7 +19,6 @@ export async function create(data, userId, boardId, author) {
 export async function getOne(id, userId) {
   const task = await Task.findById(id);
   if (!task) throw new NotFoundError('Task');
-  if (task.createdBy.toString() !== userId) throw new ForbiddenError();
   return task;
 }
 
@@ -30,7 +30,7 @@ export async function update(id, data, userId, author) {
   }
 
   if (data.columnId && data.columnId !== task.columnId?.toString()) {
-    await logActivity(task._id, task.boardId, author, `Moved to another column`);
+    await logActivity(task._id, task.boardId, author, 'Moved to another column');
   }
   if (data.priority && data.priority !== task.priority) {
     await logActivity(task._id, task.boardId, author, `Changed priority to ${data.priority}`);
@@ -50,15 +50,13 @@ export async function update(id, data, userId, author) {
 
 export async function reorder(boardId, userId, orderedIds) {
   const updates = orderedIds.map((id, index) =>
-    Task.updateOne(
-      { _id: id, createdBy: userId, boardId },
-      { position: index * 1000 }
-    )
+    Task.updateOne({ _id: id, boardId }, { position: index * 1000 })
   );
   await Promise.all(updates);
 }
 
 export async function remove(id, userId) {
-  await getOne(id, userId);
+  const task = await getOne(id, userId);
   await Task.deleteOne({ _id: id });
+  return task;
 }

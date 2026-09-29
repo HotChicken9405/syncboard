@@ -12,24 +12,21 @@ export async function create(boardId, userId, data) {
   return Column.create({ ...data, boardId, createdBy: userId, position });
 }
 
-export async function getOne(columnId, userId) {
+export async function getOne(columnId) {
   const column = await Column.findById(columnId);
   if (!column) throw new NotFoundError('Column');
-  if (column.createdBy.toString() !== userId) throw new ForbiddenError();
   return column;
 }
 
 export async function update(columnId, userId, data) {
-  const column = await getOne(columnId, userId);
+  const column = await getOne(columnId);
   Object.assign(column, data);
   await column.save();
   return column;
 }
 
 export async function remove(columnId, userId) {
-  const column = await getOne(columnId, userId);
-
-  // Block deletion if column has tasks
+  const column = await getOne(columnId);
   const taskCount = await Task.countDocuments({ columnId });
   if (taskCount > 0) {
     throw new AppError(
@@ -38,27 +35,21 @@ export async function remove(columnId, userId) {
       'COLUMN_NOT_EMPTY'
     );
   }
-
   await Column.deleteOne({ _id: columnId });
 }
 
 export async function reorder(boardId, userId, orderedIds) {
   const updates = orderedIds.map((id, index) =>
-    Column.updateOne(
-      { _id: id, boardId, createdBy: userId },
-      { position: index * 1000 }
-    )
+    Column.updateOne({ _id: id, boardId }, { position: index * 1000 })
   );
   await Promise.all(updates);
 }
 
-// Called on board creation — seed default columns
 export async function seedDefaults(boardId, userId) {
   const defaults = ['To Do', 'In Progress', 'Done'];
-  const columns = await Promise.all(
+  return Promise.all(
     defaults.map((name, i) =>
       Column.create({ name, boardId, createdBy: userId, position: i * 1000, color: '#111111' })
     )
   );
-  return columns;
 }

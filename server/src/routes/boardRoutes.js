@@ -5,10 +5,15 @@ import * as controller from '../controllers/boardController.js';
 
 const router = Router();
 
-router.get('/', controller.list);
+router.get('/',                    controller.list);
 router.post('/', validate(createBoardSchema), controller.create);
-router.get('/:id', controller.getOne);
+router.get('/:id',                 controller.getOne);
 router.patch('/:id', validate(updateBoardSchema), controller.update);
-router.delete('/:id', controller.remove);
+router.delete('/:id',              controller.remove);
+
+// Member routes
+router.get('/:id/members',         controller.getMembers);
+router.post('/:id/invite',         controller.invite);
+router.delete('/:id/members/:userId', controller.removeMember);
 
 export default router;

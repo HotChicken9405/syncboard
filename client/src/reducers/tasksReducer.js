@@ -11,6 +11,8 @@ export function tasksReducer(state, action) {
     case 'error':
       return { ...state, loading: false, error: action.error };
     case 'added':
+      // Avoid duplicates from socket + optimistic update
+      if (state.tasks.find(t => String(t._id) === String(action.task._id))) return state;
       return { ...state, tasks: [...state.tasks, action.task] };
     case 'moved':
       return {
@@ -29,6 +31,15 @@ export function tasksReducer(state, action) {
           ...action.tasks,
         ],
       };
+    case 'socket:reordered': {
+      // Reorder by orderedIds from socket
+      const map = Object.fromEntries(state.tasks.map(t => [String(t._id || t.id), t]));
+      const reordered = action.orderedIds
+        .map(id => map[id])
+        .filter(Boolean);
+      const untouched = state.tasks.filter(t => !action.orderedIds.includes(String(t._id || t.id)));
+      return { ...state, tasks: [...untouched, ...reordered] };
+    }
     case 'deleted':
       return {
         ...state,

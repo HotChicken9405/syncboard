@@ -363,3 +363,28 @@
 .form {
   animation: slideDown 0.2s ease forwards;
 }
+
+.sectionDivider {
+  margin: 40px 0 24px 0;
+  border-top: 2px solid #111;
+  padding-top: 24px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.sharedBadge {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
