@@ -9,7 +9,9 @@ export const socket = io(URL, {
 
 export function connectSocket(token) {
   socket.auth = { token };
-  socket.connect();
+  if (!socket.connected) {
+    socket.connect();
+  }
 }
 
 export function disconnectSocket() {

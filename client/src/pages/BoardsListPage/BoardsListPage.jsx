@@ -27,15 +27,24 @@ export default function BoardsListPage() {
       .catch(() => setLoading(false));
   }, []);
 
-  // Refresh boards list when invited user accepts
   useEffect(() => {
     const handleRefresh = () => {
       getBoards()
         .then(res => setBoards(res.data))
         .catch(() => {});
     };
+
+    const handleBoardDeleted = ({ boardId }) => {
+      setBoards(prev => prev.filter(b => b._id !== boardId));
+    };
+
     socket.on('boards:refresh', handleRefresh);
-    return () => socket.off('boards:refresh', handleRefresh);
+    socket.on('board:deleted', handleBoardDeleted);
+
+    return () => {
+      socket.off('boards:refresh', handleRefresh);
+      socket.off('board:deleted', handleBoardDeleted);
+    };
   }, []);
 
   const handleCreate = async (e) => {

@@ -32,8 +32,20 @@ export async function update(req, res, next) {
 
 export async function remove(req, res, next) {
   try {
+    const members = await boardService.getMembers(req.params.id, req.user.id);
     await boardService.remove(req.params.id, req.user.id);
     res.status(204).send();
+
+    // Emit to board room — redirects anyone currently on the board page
+    emitToBoard(io, req.params.id, 'board:deleted', { boardId: req.params.id });
+
+    // Emit to each member's personal room — removes board from their list page
+    members.forEach(m => {
+      if (String(m.userId) !== String(req.user.id)) {
+        emitToUser(io, String(m.userId), 'boards:refresh', {});
+        emitToUser(io, String(m.userId), 'board:deleted', { boardId: req.params.id });
+      }
+    });
   } catch (err) { next(err); }
 }
 
@@ -55,6 +67,8 @@ export async function removeMember(req, res, next) {
     );
     res.status(204).send();
     emitToUser(io, req.params.userId, 'notify:new', notification);
+    emitToUser(io, req.params.userId, 'boards:refresh', {});
+    emitToUser(io, req.params.userId, 'board:deleted', { boardId: req.params.id });
     emitToBoard(io, req.params.id, 'board:member_removed', {
       userId: req.params.userId,
       boardId: req.params.id,

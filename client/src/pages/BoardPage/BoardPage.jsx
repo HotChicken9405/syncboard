@@ -74,6 +74,9 @@ export default function BoardPage() {
     'board:member_added': ({ member }) => {
       console.log(`${member.name} joined the board`);
     },
+    'board:deleted': () => {
+      navigate('/');
+    },
     'board:member_removed': ({ userId: removedId }) => {
       if (removedId === user?.id) {
         navigate('/');

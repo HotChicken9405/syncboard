@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { getColumns, createColumn, updateColumn, deleteColumn, reorderColumns } from '../api/columns.js';
 
 export function useColumns(boardId) {
-  const [columns, setColumns]   = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
+  const [columns, setColumns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState(null);
 
   useEffect(() => {
     if (!boardId) return;
@@ -15,7 +15,8 @@ export function useColumns(boardId) {
 
   const addColumn = useCallback(async (name, color = '#111111') => {
     const res = await createColumn(boardId, { name, color });
-    setColumns(prev => [...prev, res.data]);
+    // Do NOT optimistically add here — socket event will add it for everyone
+    // including the person who created it, preventing duplicates
     return res.data;
   }, [boardId]);
 
@@ -26,7 +27,7 @@ export function useColumns(boardId) {
 
   const removeColumn = useCallback(async (columnId) => {
     await deleteColumn(boardId, columnId);
-    setColumns(prev => prev.filter(c => c._id !== columnId));
+    // Do NOT optimistically remove here — socket event handles it for everyone
   }, [boardId]);
 
   const reorder = useCallback(async (orderedIds) => {

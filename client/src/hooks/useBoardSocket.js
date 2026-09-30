@@ -1,12 +1,11 @@
 import { useEffect, useRef } from 'react';
-import { socket, connectSocket, disconnectSocket } from '../socket/socket.js';
+import { socket } from '../socket/socket.js';
 import { getAccessToken } from '../api/client.js';
 
 export function useBoardSocket(boardId, userName, handlers) {
   const handlersRef = useRef(handlers);
   const userNameRef = useRef(userName);
 
-  // Keep refs current without re-running effect
   useEffect(() => {
     handlersRef.current = handlers;
     userNameRef.current = userName;
@@ -16,11 +15,13 @@ export function useBoardSocket(boardId, userName, handlers) {
     if (!boardId) return;
 
     const token = getAccessToken();
-    connectSocket(token);
+    if (!socket.connected) {
+      socket.auth = { token };
+      socket.connect();
+    }
 
     socket.emit('board:join', { boardId, userName: userNameRef.current });
 
-    // Wrap handlers so they always use latest version
     const wrappedHandlers = {};
     Object.keys(handlersRef.current).forEach(event => {
       wrappedHandlers[event] = (...args) => handlersRef.current[event]?.(...args);
@@ -32,7 +33,7 @@ export function useBoardSocket(boardId, userName, handlers) {
       Object.keys(wrappedHandlers).forEach(event => {
         socket.off(event, wrappedHandlers[event]);
       });
-      disconnectSocket();
+      // Do NOT disconnect — keep socket alive for personal room notifications
     };
-  }, [boardId]); // boardId is the only true dependency
+  }, [boardId]);
 }
