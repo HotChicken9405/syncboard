@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNotifications } from '../../hooks/useNotifications.js';
+import { useNotifications } from '../../context/useNotifications.js';
 import NotificationPanel from '../NotificationPanel/NotificationPanel.jsx';
 import styles from './NotificationBell.module.css';
 

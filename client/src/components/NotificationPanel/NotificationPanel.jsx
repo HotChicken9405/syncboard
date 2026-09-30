@@ -1,4 +1,4 @@
-import { useNotifications } from '../../hooks/useNotifications.js';
+import { useNotifications } from '../../context/useNotifications.js';
 import styles from './NotificationPanel.module.css';
 
 function timeAgo(dateStr) {

@@ -35,11 +35,10 @@ export async function accept(req, res, next) {
       return res.status(400).json({ error: { message: 'Invitation already responded to' } });
     }
 
-    // Accept membership
     await boardService.acceptInvite(notif.boardId, req.user.id);
     await notificationService.updateStatus(notif._id, 'accepted');
 
-    // Notify the board owner
+    // Notify owner
     const ownerNotif = await notifService.create({
       userId:    notif.fromUser.id,
       type:      'invite_accepted',
@@ -50,6 +49,9 @@ export async function accept(req, res, next) {
       status:    'none',
     });
     emitToUser(io, String(notif.fromUser.id), 'notify:new', ownerNotif);
+
+    // Tell invitee's client to refresh boards list instantly
+    emitToUser(io, String(req.user.id), 'boards:refresh', {});
 
     // Notify board room
     io.to(String(notif.boardId)).emit('board:member_added', {
@@ -70,11 +72,10 @@ export async function decline(req, res, next) {
       return res.status(400).json({ error: { message: 'Invitation already responded to' } });
     }
 
-    // Remove pending membership
     await boardService.declineInvite(notif.boardId, req.user.id);
     await notificationService.updateStatus(notif._id, 'declined');
 
-    // Notify the board owner
+    // Notify owner
     const ownerNotif = await notifService.create({
       userId:    notif.fromUser.id,
       type:      'invite_declined',

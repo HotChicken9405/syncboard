@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthProvider.jsx';
 import { useAuth } from './context/useAuth.js';
+import { NotificationProvider } from './context/NotificationProvider.jsx';
 import BoardsListPage from './pages/BoardsListPage/BoardsListPage.jsx';
 import BoardPage from './pages/BoardPage/BoardPage.jsx';
 import TaskDetailPage from './pages/TaskDetailPage/TaskDetailPage.jsx';
@@ -18,16 +19,18 @@ function PrivateRoute({ children }) {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/" element={<PrivateRoute><BoardsListPage /></PrivateRoute>} />
-          <Route path="/boards/:boardId" element={<PrivateRoute><BoardPage /></PrivateRoute>} />
-          <Route path="/boards/:boardId/tasks/:id" element={<PrivateRoute><TaskDetailPage /></PrivateRoute>} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </BrowserRouter>
+      <NotificationProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/" element={<PrivateRoute><BoardsListPage /></PrivateRoute>} />
+            <Route path="/boards/:boardId" element={<PrivateRoute><BoardPage /></PrivateRoute>} />
+            <Route path="/boards/:boardId/tasks/:id" element={<PrivateRoute><TaskDetailPage /></PrivateRoute>} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </BrowserRouter>
+      </NotificationProvider>
     </AuthProvider>
   );
 }

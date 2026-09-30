@@ -11,7 +11,7 @@ export async function list(userId) {
     $or: [
       { createdBy: userId },
       { 'members.userId': userId, 'members.status': 'accepted' },
-      { 'members.userId': userId, 'members.status': { $exists: false } }, // ← handle old data
+      { 'members.userId': userId, 'members.status': { $exists: false } },
     ],
   }).sort({ createdAt: -1 });
 }
@@ -31,7 +31,10 @@ export async function getOne(boardId, userId) {
   if (!board) throw new NotFoundError('Board');
   const isMember =
     board.createdBy.toString() === userId ||
-    board.members.some(m => m.userId.toString() === userId && m.status === 'accepted');
+    board.members.some(m =>
+      m.userId.toString() === userId &&
+      (m.status === 'accepted' || m.status === 'owner' || !m.status)
+    );
   if (!isMember) throw new ForbiddenError();
   return board;
 }
@@ -64,11 +67,9 @@ export async function invite(boardId, userId, email, inviterName) {
   );
   if (alreadyMember) throw new AppError('User already invited or is a member', 409, 'CONFLICT');
 
-  // Add as pending
   board.members.push({ userId: invitee._id, role: 'member', status: 'pending' });
   await board.save();
 
-  // Create notification for invitee
   const notification = await createNotification({
     userId:    invitee._id,
     type:      'board_invite',
@@ -85,13 +86,10 @@ export async function invite(boardId, userId, email, inviterName) {
 export async function acceptInvite(boardId, userId) {
   const board = await Board.findById(boardId);
   if (!board) throw new NotFoundError('Board');
-
   const member = board.members.find(m => m.userId.toString() === userId.toString());
   if (!member) throw new AppError('Invitation not found', 404, 'NOT_FOUND');
-
   member.status = 'accepted';
   await board.save();
-
   return board;
 }
 
@@ -115,7 +113,6 @@ export async function removeMember(boardId, userId, targetUserId) {
   );
   await board.save();
 
-  // Create notification for removed user
   const notification = await createNotification({
     userId:    targetUserId,
     type:      'removed_from_board',
@@ -141,7 +138,7 @@ export async function getMembers(boardId, userId) {
       name:     user?.name  || 'Unknown',
       email:    user?.email || '',
       role:     m.role,
-      status:   m.status,
+      status:   m.status || 'accepted',
       joinedAt: m.joinedAt,
     };
   });

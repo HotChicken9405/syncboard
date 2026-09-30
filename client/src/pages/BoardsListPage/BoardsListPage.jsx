@@ -4,6 +4,7 @@ import { useAuth } from '../../context/useAuth.js';
 import { getBoards, createBoard, deleteBoard } from '../../api/boards.js';
 import AccountSidebar from '../../components/AccountSidebar/AccountSidebar.jsx';
 import NotificationBell from '../../components/NotificationBell/NotificationBell.jsx';
+import { socket } from '../../socket/socket.js';
 import styles from './BoardsListPage.module.css';
 
 const COLORS = ['#d52b1e', '#2563eb', '#7c3aed', '#059669', '#d97706', '#db2777'];
@@ -24,6 +25,17 @@ export default function BoardsListPage() {
     getBoards()
       .then(res => { setBoards(res.data); setLoading(false); })
       .catch(() => setLoading(false));
+  }, []);
+
+  // Refresh boards list when invited user accepts
+  useEffect(() => {
+    const handleRefresh = () => {
+      getBoards()
+        .then(res => setBoards(res.data))
+        .catch(() => {});
+    };
+    socket.on('boards:refresh', handleRefresh);
+    return () => socket.off('boards:refresh', handleRefresh);
   }, []);
 
   const handleCreate = async (e) => {
