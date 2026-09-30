@@ -14,6 +14,7 @@ import AddTaskForm from '../../components/AddTaskForm/AddTaskForm.jsx';
 import TaskCard from '../../components/TaskCard/TaskCard.jsx';
 import AccountSidebar from '../../components/AccountSidebar/AccountSidebar.jsx';
 import MembersPanel from '../../components/MembersPanel/MembersPanel.jsx';
+import NotificationBell from '../../components/NotificationBell/NotificationBell.jsx';
 import SearchFilterBar from '../../components/SearchFilterBar/SearchFilterBar.jsx';
 import styles from './BoardPage.module.css';
 
@@ -71,12 +72,10 @@ export default function BoardPage() {
       setPresence(users.filter(u => u.userId !== user?.id));
     },
     'board:member_added': ({ member }) => {
-      // Optionally show a toast notification
       console.log(`${member.name} joined the board`);
     },
     'board:member_removed': ({ userId: removedId }) => {
       if (removedId === user?.id) {
-        // We were removed — go back to boards list
         navigate('/');
       }
     },
@@ -180,6 +179,7 @@ export default function BoardPage() {
           <button className={styles.membersBtn} onClick={() => setShowMembers(true)}>
             Members
           </button>
+          <NotificationBell />
           <button className={styles.logoutBtn} onClick={logout}>Logout</button>
           <button className={styles.avatarBtn} onClick={() => setShowAccount(true)}>
             {(user?.name || user?.email || '?').charAt(0).toUpperCase()}

@@ -247,3 +247,20 @@
 @media (max-width: 480px) {
   .panel { width: 100vw; }
 }
+
+.memberMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.pendingBadge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  background: #fef3c7;
+  color: #92400e;
+}

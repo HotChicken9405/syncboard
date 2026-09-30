@@ -9,6 +9,7 @@ import boardRoutes from './routes/boardRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
 import columnRoutes from './routes/columnRoutes.js';
 import commentRoutes from './routes/commentRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 import { authenticate } from './middleware/authenticate.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
@@ -25,11 +26,8 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+    if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+    else callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
 }));
@@ -39,18 +37,14 @@ app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 app.use(cookieParser());
 
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
+  windowMs: 15 * 60 * 1000, max: 10,
+  standardHeaders: true, legacyHeaders: false,
   message: { error: { message: 'Too many attempts, please try again in 15 minutes', code: 'RATE_LIMITED' } }
 });
 
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,
-  standardHeaders: true,
-  legacyHeaders: false,
+  windowMs: 15 * 60 * 1000, max: 200,
+  standardHeaders: true, legacyHeaders: false,
   message: { error: { message: 'Too many requests, please slow down', code: 'RATE_LIMITED' } }
 });
 
@@ -58,11 +52,12 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
 });
 
-app.use('/api/auth', authLimiter, authRoutes);
-app.use('/api/boards', apiLimiter, authenticate, boardRoutes);
-app.use('/api/boards/:boardId/columns', apiLimiter, authenticate, columnRoutes);
-app.use('/api/boards/:boardId/tasks', apiLimiter, authenticate, taskRoutes);
-app.use('/api/boards/:boardId/tasks/:id', apiLimiter, authenticate, commentRoutes);
+app.use('/api/auth',                              authLimiter,  authRoutes);
+app.use('/api/notifications',          authenticate, apiLimiter,  notificationRoutes);
+app.use('/api/boards',                 authenticate, apiLimiter,  boardRoutes);
+app.use('/api/boards/:boardId/columns',authenticate, apiLimiter,  columnRoutes);
+app.use('/api/boards/:boardId/tasks',  authenticate, apiLimiter,  taskRoutes);
+app.use('/api/boards/:boardId/tasks/:id', authenticate, apiLimiter, commentRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

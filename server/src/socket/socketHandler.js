@@ -1,11 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config/config.js';
 
-const boardPresence = new Map(); // boardId → Set of { userId, name }
+const boardPresence = new Map();
 
 export function initSocket(io) {
-
-  // Authenticate socket connection
   io.use((socket, next) => {
     const token = socket.handshake.auth?.token;
     if (!token) return next(new Error('Authentication required'));
@@ -21,16 +19,17 @@ export function initSocket(io) {
   io.on('connection', (socket) => {
     const user = socket.user;
 
+    // Each user joins their own personal room for notifications
+    socket.join(`user:${user.id}`);
+
     socket.on('board:join', ({ boardId, userName }) => {
       socket.join(boardId);
       socket.currentBoard = boardId;
       socket.userName     = userName;
 
-      // Track presence
       if (!boardPresence.has(boardId)) boardPresence.set(boardId, new Set());
       boardPresence.get(boardId).add({ userId: user.id, name: userName });
 
-      // Broadcast updated presence to everyone in board
       io.to(boardId).emit('board:presence', [...boardPresence.get(boardId)]);
     });
 
@@ -63,4 +62,8 @@ function leaveBoard(socket, boardId, io) {
 
 export function emitToBoard(io, boardId, event, data) {
   io.to(boardId).emit(event, data);
+}
+
+export function emitToUser(io, userId, event, data) {
+  io.to(`user:${userId}`).emit(event, data);
 }

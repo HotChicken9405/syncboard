@@ -1,6 +1,6 @@
 import * as boardService from '../services/boardService.js';
 import { io } from '../server.js';
-import { emitToBoard } from '../socket/socketHandler.js';
+import { emitToBoard, emitToUser } from '../socket/socketHandler.js';
 
 export async function list(req, res, next) {
   try {
@@ -40,16 +40,21 @@ export async function remove(req, res, next) {
 export async function invite(req, res, next) {
   try {
     const { email } = req.body;
-    const { member, board } = await boardService.invite(req.params.id, req.user.id, email);
-    res.status(201).json({ data: member });
-    emitToBoard(io, req.params.id, 'board:member_added', { member, boardId: req.params.id });
+    const { notification, invitee } = await boardService.invite(
+      req.params.id, req.user.id, email, req.user.name
+    );
+    res.status(201).json({ data: { message: `Invitation sent to ${invitee.email}` } });
+    emitToUser(io, String(invitee._id), 'notify:new', notification);
   } catch (err) { next(err); }
 }
 
 export async function removeMember(req, res, next) {
   try {
-    await boardService.removeMember(req.params.id, req.user.id, req.params.userId);
+    const { board, notification } = await boardService.removeMember(
+      req.params.id, req.user.id, req.params.userId
+    );
     res.status(204).send();
+    emitToUser(io, req.params.userId, 'notify:new', notification);
     emitToBoard(io, req.params.id, 'board:member_removed', {
       userId: req.params.userId,
       boardId: req.params.id,

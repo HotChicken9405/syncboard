@@ -12,7 +12,8 @@ export default function MembersPanel({ boardId, board, onClose }) {
   const [error, setError]       = useState('');
   const [success, setSuccess]   = useState('');
 
-  const isOwner = board?.createdBy === user?.id ||
+  const isOwner =
+    board?.createdBy === user?.id ||
     String(board?.createdBy) === String(user?.id);
 
   useEffect(() => {
@@ -28,10 +29,9 @@ export default function MembersPanel({ boardId, board, onClose }) {
     setError('');
     setSuccess('');
     try {
-      const res = await inviteMember(boardId, email.trim());
-      setMembers(prev => [...prev, res.data]);
+      await inviteMember(boardId, email.trim());
       setEmail('');
-      setSuccess(`${res.data.name} added successfully!`);
+      setSuccess(`Invitation sent to ${email.trim()}!`);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -81,7 +81,7 @@ export default function MembersPanel({ boardId, board, onClose }) {
                 className={styles.inviteBtn}
                 disabled={inviting}
               >
-                {inviting ? 'Inviting...' : 'Send Invite →'}
+                {inviting ? 'Sending...' : 'Send Invite →'}
               </button>
             </form>
           </div>
@@ -105,13 +105,19 @@ export default function MembersPanel({ boardId, board, onClose }) {
                     <span className={styles.memberName}>{m.name}</span>
                     <span className={styles.memberEmail}>{m.email}</span>
                   </div>
-                  <span className={`${styles.roleBadge} ${styles[m.role]}`}>
-                    {m.role}
-                  </span>
+                  <div className={styles.memberMeta}>
+                    <span className={`${styles.roleBadge} ${styles[m.role]}`}>
+                      {m.role}
+                    </span>
+                    {m.status === 'pending' && (
+                      <span className={styles.pendingBadge}>Pending</span>
+                    )}
+                  </div>
                   {isOwner && m.role !== 'owner' && (
                     <button
                       className={styles.removeBtn}
                       onClick={() => handleRemove(m.userId)}
+                      title="Remove member"
                     >
                       ×
                     </button>

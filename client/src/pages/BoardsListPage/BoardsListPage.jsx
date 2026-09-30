@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth.js';
 import { getBoards, createBoard, deleteBoard } from '../../api/boards.js';
 import AccountSidebar from '../../components/AccountSidebar/AccountSidebar.jsx';
+import NotificationBell from '../../components/NotificationBell/NotificationBell.jsx';
 import styles from './BoardsListPage.module.css';
 
 const COLORS = ['#d52b1e', '#2563eb', '#7c3aed', '#059669', '#d97706', '#db2777'];
@@ -10,14 +11,14 @@ const COLORS = ['#d52b1e', '#2563eb', '#7c3aed', '#059669', '#d97706', '#db2777'
 export default function BoardsListPage() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const [boards, setBoards]         = useState([]);
-  const [loading, setLoading]       = useState(true);
-  const [showForm, setShowForm]     = useState(false);
+  const [boards, setBoards]           = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [showForm, setShowForm]       = useState(false);
   const [showAccount, setShowAccount] = useState(false);
-  const [name, setName]             = useState('');
+  const [name, setName]               = useState('');
   const [description, setDescription] = useState('');
-  const [color, setColor]           = useState(COLORS[0]);
-  const [error, setError]           = useState('');
+  const [color, setColor]             = useState(COLORS[0]);
+  const [error, setError]             = useState('');
 
   useEffect(() => {
     getBoards()
@@ -47,7 +48,6 @@ export default function BoardsListPage() {
     <div className={styles.page}><div className={styles.center}>Loading...</div></div>
   );
 
-  // Split boards into owned and shared
   const ownedBoards  = boards.filter(b => String(b.createdBy) === String(user?.id));
   const sharedBoards = boards.filter(b => String(b.createdBy) !== String(user?.id));
 
@@ -90,6 +90,7 @@ export default function BoardsListPage() {
           <span className={styles.meta}>YOUR WORKSPACE</span>
         </div>
         <div className={styles.headerRight}>
+          <NotificationBell />
           <button className={styles.logoutBtn} onClick={logout}>Logout</button>
           <button className={styles.avatarBtn} onClick={() => setShowAccount(true)}>
             {(user?.name || user?.email || '?').charAt(0).toUpperCase()}
@@ -150,7 +151,6 @@ export default function BoardsListPage() {
           </form>
         )}
 
-        {/* Owned boards */}
         {ownedBoards.length === 0 && !showForm ? (
           <div className={styles.empty}>
             <p>No boards yet. Create your first one!</p>
@@ -163,7 +163,6 @@ export default function BoardsListPage() {
           </div>
         )}
 
-        {/* Shared boards */}
         {sharedBoards.length > 0 && (
           <>
             <div className={styles.sectionDivider}>
