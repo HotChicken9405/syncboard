@@ -388,3 +388,21 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.skeletonCard {
+  height: 140px;
+  background: linear-gradient(90deg, #e2e2dd 25%, #ececea 50%, #e2e2dd 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

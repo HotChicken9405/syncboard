@@ -27,7 +27,7 @@ export default function BoardPage() {
   const navigate     = useNavigate();
   const { logout, user } = useAuth();
   const { state, dispatch, addTask, moveTask, removeTask, online } = useTasks(boardId);
-  const { columns, loading: colLoading, addColumn, renameColumn, removeColumn, setColumns } = useColumns(boardId);
+  const { columns, addColumn, renameColumn, removeColumn, setColumns } = useColumns(boardId);
 
   const [board, setBoard]               = useState(null);
   const [activeTask, setActiveTask]     = useState(null);
@@ -54,7 +54,10 @@ export default function BoardPage() {
       dispatch({ type: 'socket:reordered', orderedIds });
     },
     'column:created': (column) => {
-      setColumns(prev => [...prev, column]);
+      setColumns(prev => {
+        if (prev.find(c => c._id === column._id)) return prev;
+        return [...prev, column];
+      });
     },
     'column:updated': (column) => {
       setColumns(prev => prev.map(c => c._id === column._id ? column : c));
@@ -74,13 +77,11 @@ export default function BoardPage() {
     'board:member_added': ({ member }) => {
       console.log(`${member.name} joined the board`);
     },
+    'board:member_removed': ({ userId: removedId }) => {
+      if (removedId === user?.id) navigate('/');
+    },
     'board:deleted': () => {
       navigate('/');
-    },
-    'board:member_removed': ({ userId: removedId }) => {
-      if (removedId === user?.id) {
-        navigate('/');
-      }
     },
   }), [dispatch, setColumns, user?.id, navigate]);
 
@@ -142,9 +143,6 @@ export default function BoardPage() {
     }
   };
 
-  if (state.loading || colLoading) return (
-    <div className={styles.page}><div className={styles.center}>Loading...</div></div>
-  );
   if (state.error) return (
     <div className={styles.page}><div className={styles.center}>Error: {state.error}</div></div>
   );

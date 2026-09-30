@@ -33,14 +33,11 @@ export default function BoardsListPage() {
         .then(res => setBoards(res.data))
         .catch(() => {});
     };
-
     const handleBoardDeleted = ({ boardId }) => {
       setBoards(prev => prev.filter(b => b._id !== boardId));
     };
-
     socket.on('boards:refresh', handleRefresh);
     socket.on('board:deleted', handleBoardDeleted);
-
     return () => {
       socket.off('boards:refresh', handleRefresh);
       socket.off('board:deleted', handleBoardDeleted);
@@ -64,10 +61,6 @@ export default function BoardsListPage() {
     await deleteBoard(id);
     setBoards(prev => prev.filter(b => b._id !== id));
   };
-
-  if (loading) return (
-    <div className={styles.page}><div className={styles.center}>Loading...</div></div>
-  );
 
   const ownedBoards  = boards.filter(b => String(b.createdBy) === String(user?.id));
   const sharedBoards = boards.filter(b => String(b.createdBy) !== String(user?.id));
@@ -172,7 +165,11 @@ export default function BoardsListPage() {
           </form>
         )}
 
-        {ownedBoards.length === 0 && !showForm ? (
+        {loading ? (
+          <div className={styles.skeletonGrid}>
+            {[1, 2, 3].map(i => <div key={i} className={styles.skeletonCard} />)}
+          </div>
+        ) : ownedBoards.length === 0 && !showForm ? (
           <div className={styles.empty}>
             <p>No boards yet. Create your first one!</p>
           </div>
@@ -184,7 +181,7 @@ export default function BoardsListPage() {
           </div>
         )}
 
-        {sharedBoards.length > 0 && (
+        {!loading && sharedBoards.length > 0 && (
           <>
             <div className={styles.sectionDivider}>
               <h2 className={styles.sectionTitle}>Shared With You</h2>

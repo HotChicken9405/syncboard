@@ -6,7 +6,7 @@ export default function AddTaskForm({ onAdd, columns }) {
   const [assignee, setAssignee] = useState('');
   const [dueDate, setDueDate]   = useState('');
   const [priority, setPriority] = useState('normal');
-  const [columnId, setColumnId] = useState(columns?.[0]?._id || '');
+  const [columnId, setColumnId] = useState('');
   const [error, setError]       = useState('');
   const [open, setOpen]         = useState(false);
 
@@ -18,10 +18,13 @@ export default function AddTaskForm({ onAdd, columns }) {
       setError('Title must be at least 3 characters');
       return;
     }
-    if (!columnId) {
+
+    const resolvedColumnId = columnId || columns?.[0]?._id || '';
+    if (!resolvedColumnId) {
       setError('Please select a column');
       return;
     }
+
     const selectedDate = new Date(dueDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -30,9 +33,9 @@ export default function AddTaskForm({ onAdd, columns }) {
       return;
     }
 
-    onAdd({ title: title.trim(), assignee: assignee.trim() || 'Unassigned', columnId, dueDate, priority });
+    onAdd({ title: title.trim(), assignee: assignee.trim() || 'Unassigned', columnId: resolvedColumnId, dueDate, priority });
     setTitle(''); setAssignee(''); setDueDate(''); setPriority('normal');
-    setColumnId(columns?.[0]?._id || '');
+    setColumnId('');
     setOpen(false);
   };
 
@@ -76,7 +79,11 @@ export default function AddTaskForm({ onAdd, columns }) {
       <div className={styles.row}>
         <div className={styles.field}>
           <label>Column</label>
-          <select value={columnId} onChange={e => setColumnId(e.target.value)} required>
+          <select
+            value={columnId || columns?.[0]?._id || ''}
+            onChange={e => setColumnId(e.target.value)}
+            required
+          >
             {columns?.map(col => (
               <option key={col._id} value={col._id}>{col.name}</option>
             ))}
