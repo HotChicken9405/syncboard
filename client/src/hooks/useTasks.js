@@ -96,7 +96,6 @@ export function useTasks(boardId) {
   }, [online, boardId, state.tasks]);
 
   const removeTask = useCallback((id) => {
-    if (!window.confirm('Delete this task?')) return;
     if (!online) {
       addToQueue({ type: 'deleted', boardId, id });
       dispatch({ type: 'deleted', id });

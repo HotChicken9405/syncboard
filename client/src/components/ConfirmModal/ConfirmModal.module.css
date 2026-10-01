@@ -1,0 +1,90 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.15s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal {
+  background: #fff;
+  border: 2px solid #111;
+  padding: 32px;
+  width: 100%;
+  max-width: 380px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  animation: slideUp 0.15s ease forwards;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.message {
+  margin: 0 0 28px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.confirmBtn {
+  padding: 12px 24px;
+  background: #d52b1e;
+  color: #fff;
+  border: 2px solid #d52b1e;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+
+.confirmBtn:hover { opacity: 0.85; }
+
+.cancelBtn {
+  padding: 12px 24px;
+  background: transparent;
+  color: #111;
+  border: 2px solid #111;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.cancelBtn:hover {
+  background: #111;
+  color: #fff;
+}
+
+.confirmBtn:hover {
+  opacity: 0.85;
+  box-shadow: 3px 3px 0 #111;  /* ← add this */
+}
+
+.cancelBtn:hover {
+  background: #111;
+  color: #fff;
+  box-shadow: 3px 3px 0 #555;  /* ← add this */
+}

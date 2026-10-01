@@ -4,6 +4,7 @@ import { useAuth } from '../../context/useAuth.js';
 import { getBoards, createBoard, deleteBoard } from '../../api/boards.js';
 import AccountSidebar from '../../components/AccountSidebar/AccountSidebar.jsx';
 import NotificationBell from '../../components/NotificationBell/NotificationBell.jsx';
+import ConfirmModal from '../../components/ConfirmModal/ConfirmModal.jsx';
 import { socket } from '../../socket/socket.js';
 import styles from './BoardsListPage.module.css';
 
@@ -12,14 +13,15 @@ const COLORS = ['#d52b1e', '#2563eb', '#7c3aed', '#059669', '#d97706', '#db2777'
 export default function BoardsListPage() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const [boards, setBoards]           = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [showForm, setShowForm]       = useState(false);
-  const [showAccount, setShowAccount] = useState(false);
-  const [name, setName]               = useState('');
-  const [description, setDescription] = useState('');
-  const [color, setColor]             = useState(COLORS[0]);
-  const [error, setError]             = useState('');
+  const [boards, setBoards]             = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [showForm, setShowForm]         = useState(false);
+  const [showAccount, setShowAccount]   = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [name, setName]                 = useState('');
+  const [description, setDescription]   = useState('');
+  const [color, setColor]               = useState(COLORS[0]);
+  const [error, setError]               = useState('');
 
   useEffect(() => {
     getBoards()
@@ -55,11 +57,15 @@ export default function BoardsListPage() {
     } catch (err) { setError(err.message); }
   };
 
-  const handleDelete = async (e, id) => {
+  const handleDelete = (e, id) => {
     e.stopPropagation();
-    if (!window.confirm('Delete this board and all its tasks?')) return;
-    await deleteBoard(id);
-    setBoards(prev => prev.filter(b => b._id !== id));
+    setConfirmDelete(id);
+  };
+
+  const confirmDeleteBoard = async () => {
+    await deleteBoard(confirmDelete);
+    setBoards(prev => prev.filter(b => b._id !== confirmDelete));
+    setConfirmDelete(null);
   };
 
   const ownedBoards  = boards.filter(b => String(b.createdBy) === String(user?.id));
@@ -196,6 +202,14 @@ export default function BoardsListPage() {
       </main>
 
       {showAccount && <AccountSidebar onClose={() => setShowAccount(false)} />}
+
+      {confirmDelete && (
+        <ConfirmModal
+          message="Delete this board and all its tasks? This action cannot be undone."
+          onConfirm={confirmDeleteBoard}
+          onCancel={() => setConfirmDelete(null)}
+        />
+      )}
     </div>
   );
 }
