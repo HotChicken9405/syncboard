@@ -1,7 +1,7 @@
 import * as notificationService from '../services/notificationService.js';
 import * as boardService from '../services/boardService.js';
 import * as notifService from '../services/notificationService.js';
-import { io } from '../server.js';
+import { getIO } from '../socket/io.js';
 import { emitToUser } from '../socket/socketHandler.js';
 
 export async function list(req, res, next) {
@@ -38,7 +38,6 @@ export async function accept(req, res, next) {
     await boardService.acceptInvite(notif.boardId, req.user.id);
     await notificationService.updateStatus(notif._id, 'accepted');
 
-    // Notify owner
     const ownerNotif = await notifService.create({
       userId:    notif.fromUser.id,
       type:      'invite_accepted',
@@ -48,13 +47,11 @@ export async function accept(req, res, next) {
       fromUser:  { id: req.user.id, name: req.user.name },
       status:    'none',
     });
-    emitToUser(io, String(notif.fromUser.id), 'notify:new', ownerNotif);
 
-    // Tell invitee's client to refresh boards list instantly
-    emitToUser(io, String(req.user.id), 'boards:refresh', {});
+    emitToUser(getIO(), String(notif.fromUser.id), 'notify:new', ownerNotif);
+    emitToUser(getIO(), String(req.user.id), 'boards:refresh', {});
 
-    // Notify board room
-    io.to(String(notif.boardId)).emit('board:member_added', {
+    getIO().to(String(notif.boardId)).emit('board:member_added', {
       member: { userId: req.user.id, name: req.user.name, role: 'member' },
     });
 
@@ -75,7 +72,6 @@ export async function decline(req, res, next) {
     await boardService.declineInvite(notif.boardId, req.user.id);
     await notificationService.updateStatus(notif._id, 'declined');
 
-    // Notify owner
     const ownerNotif = await notifService.create({
       userId:    notif.fromUser.id,
       type:      'invite_declined',
@@ -85,7 +81,8 @@ export async function decline(req, res, next) {
       fromUser:  { id: req.user.id, name: req.user.name },
       status:    'none',
     });
-    emitToUser(io, String(notif.fromUser.id), 'notify:new', ownerNotif);
+
+    emitToUser(getIO(), String(notif.fromUser.id), 'notify:new', ownerNotif);
 
     res.json({ data: { message: 'Invitation declined' } });
   } catch (err) { next(err); }

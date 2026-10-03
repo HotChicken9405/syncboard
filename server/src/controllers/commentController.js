@@ -1,5 +1,5 @@
 import * as commentService from '../services/commentService.js';
-import { io } from '../server.js';
+import { getIO } from '../socket/io.js';
 import { emitToBoard } from '../socket/socketHandler.js';
 
 export async function listComments(req, res, next) {
@@ -18,7 +18,7 @@ export async function addComment(req, res, next) {
       req.body.text
     );
     res.status(201).json({ data: comment });
-    emitToBoard(io, req.params.boardId, 'comment:created', {
+    emitToBoard(getIO(), req.params.boardId, 'comment:created', {
       taskId: req.params.id,
       comment,
     });

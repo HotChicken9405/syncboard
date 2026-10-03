@@ -37,14 +37,18 @@ app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 app.use(cookieParser());
 
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, max: 10,
-  standardHeaders: true, legacyHeaders: false,
+  windowMs: 15 * 60 * 1000,
+  max: process.env.NODE_ENV === 'test' ? 1000 : 10,
+  standardHeaders: true,
+  legacyHeaders: false,
   message: { error: { message: 'Too many attempts, please try again in 15 minutes', code: 'RATE_LIMITED' } }
 });
 
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, max: 200,
+  windowMs: 15 * 60 * 1000,
+  max: process.env.NODE_ENV === 'test' ? 1000 : 200,
   standardHeaders: true, legacyHeaders: false,
+  legacyHeaders: false,
   message: { error: { message: 'Too many requests, please slow down', code: 'RATE_LIMITED' } }
 });
 

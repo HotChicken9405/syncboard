@@ -1,5 +1,5 @@
 import * as boardService from '../services/boardService.js';
-import { io } from '../server.js';
+import { getIO } from '../socket/io.js';
 import { emitToBoard, emitToUser } from '../socket/socketHandler.js';
 
 export async function list(req, res, next) {
@@ -35,15 +35,11 @@ export async function remove(req, res, next) {
     const members = await boardService.getMembers(req.params.id, req.user.id);
     await boardService.remove(req.params.id, req.user.id);
     res.status(204).send();
-
-    // Emit to board room — redirects anyone currently on the board page
-    emitToBoard(io, req.params.id, 'board:deleted', { boardId: req.params.id });
-
-    // Emit to each member's personal room — removes board from their list page
+    emitToBoard(getIO(), req.params.id, 'board:deleted', { boardId: req.params.id });
     members.forEach(m => {
       if (String(m.userId) !== String(req.user.id)) {
-        emitToUser(io, String(m.userId), 'boards:refresh', {});
-        emitToUser(io, String(m.userId), 'board:deleted', { boardId: req.params.id });
+        emitToUser(getIO(), String(m.userId), 'boards:refresh', {});
+        emitToUser(getIO(), String(m.userId), 'board:deleted', { boardId: req.params.id });
       }
     });
   } catch (err) { next(err); }
@@ -56,7 +52,7 @@ export async function invite(req, res, next) {
       req.params.id, req.user.id, email, req.user.name
     );
     res.status(201).json({ data: { message: `Invitation sent to ${invitee.email}` } });
-    emitToUser(io, String(invitee._id), 'notify:new', notification);
+    emitToUser(getIO(), String(invitee._id), 'notify:new', notification);
   } catch (err) { next(err); }
 }
 
@@ -66,10 +62,10 @@ export async function removeMember(req, res, next) {
       req.params.id, req.user.id, req.params.userId
     );
     res.status(204).send();
-    emitToUser(io, req.params.userId, 'notify:new', notification);
-    emitToUser(io, req.params.userId, 'boards:refresh', {});
-    emitToUser(io, req.params.userId, 'board:deleted', { boardId: req.params.id });
-    emitToBoard(io, req.params.id, 'board:member_removed', {
+    emitToUser(getIO(), req.params.userId, 'notify:new', notification);
+    emitToUser(getIO(), req.params.userId, 'boards:refresh', {});
+    emitToUser(getIO(), req.params.userId, 'board:deleted', { boardId: req.params.id });
+    emitToBoard(getIO(), req.params.id, 'board:member_removed', {
       userId: req.params.userId,
       boardId: req.params.id,
     });

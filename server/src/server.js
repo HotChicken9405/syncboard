@@ -1,8 +1,8 @@
 import { createServer } from 'http';
-import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import { config } from './config/config.js';
 import app from './app.js';
+import { initIO } from './socket/io.js';
 import { initSocket } from './socket/socketHandler.js';
 
 const REQUIRED_ENV = ['JWT_SECRET', 'MONGODB_URI'];
@@ -24,11 +24,8 @@ const allowedOrigins = [
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
-export const io = new Server(httpServer, {
-  cors: {
-    origin: allowedOrigins,
-    credentials: true,
-  },
+const io = initIO(httpServer, {
+  cors: { origin: allowedOrigins, credentials: true },
 });
 
 initSocket(io);

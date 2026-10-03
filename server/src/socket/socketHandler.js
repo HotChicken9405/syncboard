@@ -61,9 +61,11 @@ function leaveBoard(socket, boardId, io) {
 }
 
 export function emitToBoard(io, boardId, event, data) {
+  if (!io) return;
   io.to(boardId).emit(event, data);
 }
 
 export function emitToUser(io, userId, event, data) {
+  if (!io) return;
   io.to(`user:${userId}`).emit(event, data);
 }
