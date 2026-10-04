@@ -4,12 +4,14 @@ import { login as apiLogin, register as apiRegister, logout as apiLogout } from 
 import { setAccessToken } from '../api/client.js';
 import { connectSocket, disconnectSocket } from '../socket/socket.js';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/auth/refresh', {
+    fetch(`${API_BASE}/auth/refresh`, {
       method: 'POST',
       credentials: 'include',
     })
@@ -51,7 +53,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try { await apiLogout(); } catch {
-      // No valid session — user needs to log in
+      // continue logout even if server call fails
     }
     setAccessToken(null);
     setUser(null);

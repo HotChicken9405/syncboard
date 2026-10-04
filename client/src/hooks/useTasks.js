@@ -3,6 +3,9 @@ import { tasksReducer, initialState } from '../reducers/tasksReducer.js';
 import * as api from '../api/tasks.js';
 import { getCachedTasks, cacheTasks, getOfflineQueue, addToQueue, clearQueue } from '../utils/storage.js';
 
+const HEALTH_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api')
+  .replace('/api', '');
+
 export function useTasks(boardId) {
   const [state, dispatch] = useReducer(tasksReducer, {
     ...initialState,
@@ -13,7 +16,7 @@ export function useTasks(boardId) {
   useEffect(() => {
     const checkOnline = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/health');
+        const res = await fetch(`${HEALTH_URL}/api/health`);
         if (res.ok) setOnline(true);
         else setOnline(false);
       } catch {

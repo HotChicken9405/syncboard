@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:4000/api';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
 let accessToken = null;
 let isRefreshing = false;
@@ -63,7 +63,7 @@ export async function request(path, options = {}) {
       processQueue(err, null);
       setAccessToken(null);
       window.dispatchEvent(new Event('auth:expired'));
-      throw new Error('Session expired, please log in again', { cause: err }); // ← cause attached
+      throw new Error('Session expired, please log in again', { cause: err });
     } finally {
       isRefreshing = false;
     }
